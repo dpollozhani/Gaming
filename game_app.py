@@ -7,8 +7,10 @@ import base64
 mode = 'test' #prod
 
 @st.cache
-def search(text, approximate):
-    raw_info = game_info(text, approximate)   
+def search(input, name_or_id='name', approximate=True):
+
+    raw_info = game_info(input=input, name_or_id=name_or_id, approximate_match=approximate)
+    
     return raw_info
 
 def ingress(info):
@@ -60,99 +62,101 @@ approximate = True if match_type=='Approximate' else False
 
 try:
     if len(search_text) > 0:
-        raw_data = search(search_text, approximate)
+        raw_data = search(input=search_text, approximate=approximate)
         multiple_results = prompt_multiple_results(raw_data)
-        #Too many results matching query -> prompt
-        if len(multiple_results) > 1:
-            st.write(multiple_results + '<p style="font-size:13px;font-style:oblique;">Narrow down your search.</p>', unsafe_allow_html=True)
-        else:
-            #Get data
-            data = clean_game_info(raw_data[0])
-            
-            title, summary = ingress(data)
-            image_path = get_image_url(data['id'], endpoint='games', img_type='cover')
-            header = f'<div><img style="float:right;", src="{image_path}", class="img-fluid"/><h2 style:"float:left;">{title}</h2><p>{summary}</p></div>'
-            
-            st.markdown(header, unsafe_allow_html=True)
         
-            col12, col22, col32 = st.beta_columns(3)
-            col13, col23, col33 = st.beta_columns(3)
-            remove_from_details = []
-            #First info row
-            with col12:
-                st.subheader('Age rating')
-                if 'age_ratings' in data.keys():
-                    for age_r in data['age_ratings'].split(';'):
-                        st.markdown(f'* {age_r}')
-                    remove_from_details.append('age_ratings')
-                else:
-                    st.markdown('No data available.')
-            with col22:
-                st.markdown('### Critic metascore')
-                if 'aggregated_rating' in data.keys():
-                    st.markdown(str(round(data['aggregated_rating'])))
-                    remove_from_details.append('aggregated_rating')
-                else:
-                    st.markdown('No data available.')
-            with col32:
-                st.markdown('### Released')
-                if 'release_dates' in data.keys():
-                    st.markdown(data['release_dates'].split(';')[-1])
-                    remove_from_details.append('release_dates')
-                else:
-                    st.markdown('No data available.')
-                
-            #Second info row
-            with col13:
-                st.markdown('### Genres')
-                if 'genres' in data.keys():
-                    for genre in data['genres'].split(';'):
-                        st.markdown(f'* {genre}')
-                    remove_from_details.append('genres')
-                else:
-                    st.markdown('No data available.')
-            with col23:
-                st.markdown('### Game modes')
-                if 'game_modes' in data.keys():
-                    for game_m in data['game_modes'].split(';'):
-                        st.markdown(f'* {game_m}')
-                    remove_from_details.append('game_modes')
-                else:
-                    st.markdown('No data available.')
-            with col33:
-                st.markdown('### Available on')
-                if 'platforms' in data.keys():
-                    for p in data['platforms'].split(';'):
-                        st.markdown(f'* {p}')
-                    remove_from_details.append('platforms')
-                else:
-                    st.markdown('No data available.')
-            
-            #Expand for similar games        
-            if 'similar_games' in data.keys(): 
-                with st.beta_expander('Similar games'):
-                    for game in data['similar_games'].split(';'):
-                        st.markdown(f'* {game}')
-                remove_from_details.append('similar_games')
-            
-            #Expand for game engine
-            if 'game_engines' in data.keys(): 
-                with st.beta_expander('Engine(s)'):
-                    for engine in data['game_engines'].split(';'):
-                        st.markdown(f'* {engine}')
-                remove_from_details.append('game_engines')
+        #Too many results matching query -> prompt to select
+        if len(multiple_results) > 1:
+            search_text = st.selectbox('Multiple matches were found (first is shown). Narrow down your search:', list(multiple_results.keys()))
+            raw_data = search(input=multiple_results[search_text], name_or_id='id')
 
-            #Expand for keywords
-            if 'keywords' in data.keys():
-                with st.beta_expander('Keywords'):
-                    st.markdown(data['keywords'])
-                remove_from_details.append('keywords')
+        #Get data
+        data = clean_game_info(raw_data[0])
+        
+        title, summary = ingress(data)
+        image_path = get_image_url(data['id'], endpoint='games', img_type='cover')
+        header = f'<div><img style="float:right;", src="{image_path}", class="img-fluid"/><h2 style:"float:left;">{title}</h2><p>{summary}</p></div>'
+        
+        st.markdown(header, unsafe_allow_html=True)
+    
+        col12, col22, col32 = st.beta_columns(3)
+        col13, col23, col33 = st.beta_columns(3)
+        remove_from_details = []
+        #First info row
+        with col12:
+            st.subheader('Age rating')
+            if 'age_ratings' in data.keys():
+                for age_r in data['age_ratings'].split(';'):
+                    st.markdown(f'* {age_r}')
+                remove_from_details.append('age_ratings')
+            else:
+                st.markdown('No data available.')
+        with col22:
+            st.markdown('### Critic metascore')
+            if 'aggregated_rating' in data.keys():
+                st.markdown(str(round(data['aggregated_rating'])))
+                remove_from_details.append('aggregated_rating')
+            else:
+                st.markdown('No data available.')
+        with col32:
+            st.markdown('### Released')
+            if 'release_dates' in data.keys():
+                st.markdown(data['release_dates'].split(';')[-1])
+                remove_from_details.append('release_dates')
+            else:
+                st.markdown('No data available.')
+            
+        #Second info row
+        with col13:
+            st.markdown('### Genres')
+            if 'genres' in data.keys():
+                for genre in data['genres'].split(';'):
+                    st.markdown(f'* {genre}')
+                remove_from_details.append('genres')
+            else:
+                st.markdown('No data available.')
+        with col23:
+            st.markdown('### Game modes')
+            if 'game_modes' in data.keys():
+                for game_m in data['game_modes'].split(';'):
+                    st.markdown(f'* {game_m}')
+                remove_from_details.append('game_modes')
+            else:
+                st.markdown('No data available.')
+        with col33:
+            st.markdown('### Available on')
+            if 'platforms' in data.keys():
+                for p in data['platforms'].split(';'):
+                    st.markdown(f'* {p}')
+                remove_from_details.append('platforms')
+            else:
+                st.markdown('No data available.')
+        
+        #Expand for similar games        
+        if 'similar_games' in data.keys(): 
+            with st.beta_expander('Similar games'):
+                for game in data['similar_games'].split(';'):
+                    st.markdown(f'* {game}')
+            remove_from_details.append('similar_games')
+        
+        #Expand for game engine
+        if 'game_engines' in data.keys(): 
+            with st.beta_expander('Engine(s)'):
+                for engine in data['game_engines'].split(';'):
+                    st.markdown(f'* {engine}')
+            remove_from_details.append('game_engines')
 
-            #Expand for further details        
-            with st.beta_expander('Further details'):
-                df = render(data, filters=remove_from_details)
-                df.rename(columns={'Details': ''}, inplace=True)
-                st.write(df.to_html(escape=False, index=False), unsafe_allow_html=True)
+        #Expand for keywords
+        if 'keywords' in data.keys():
+            with st.beta_expander('Keywords'):
+                st.markdown(data['keywords'])
+            remove_from_details.append('keywords')
+
+        #Expand for further details        
+        with st.beta_expander('Further details'):
+            df = render(data, filters=remove_from_details)
+            df.rename(columns={'Details': ''}, inplace=True)
+            st.write(df.to_html(escape=False, index=False), unsafe_allow_html=True)
 except Exception as e:
     st.error('Something went wrong. Please try again, for instance by changing match option or re-writing your query.')
     if mode == 'test':

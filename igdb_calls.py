@@ -46,7 +46,7 @@ def multiquery(endpoint:str, result_name:str, query:str):
     data = get_data('multiquery', multiquery)
     return data
 
-def game_info(name:str, approximate_match=True):
+def game_info(input, name_or_id, approximate_match=True):
     fields = ''' age_ratings.*, 
         aggregated_rating,
         bundles.name,
@@ -71,9 +71,14 @@ def game_info(name:str, approximate_match=True):
         total_rating,
         url
     '''
-    try:
-        name_query = f'~ "{name}"' if not approximate_match else f'~ *"{name}"*'
-        query = f'fields {fields}; where name {name_query};'
+    
+    try:  
+        assert (name_or_id == 'name') or (name_or_id == 'id'), "Only name or id is accepted"
+        if name_or_id == 'name':
+            name_query = f'name ~ "{input}"' if not approximate_match else f'name ~ *"{input}"*'
+        else:
+            name_query = f'id = {input}' 
+        query = f'fields {fields}; where {name_query};'
         data = get_data('games', query)
     except Exception as e:
         print('Check the query:', e)
@@ -146,15 +151,13 @@ def platform_info(name:str):
 def clean_platform_info(info):
     pass
 
-def prompt_multiple_results(info):
-    text = ''
+def prompt_multiple_results(info)->dict:
+    results = {}
     if isinstance(info, list):
         if len(info) > 1:
-            text = '<p style="font-size:13px;font-style:oblique;">Several matches were found:</p>'
             for title in info:
-                title_name = title['name']
-                text += f'<ul style="font-size:12px;">{title_name}</ul>'
-    return text
+                results[title['name']] = title['id']
+    return results
 
 def get_image_url(id, endpoint='games', img_type='cover'):
     try:
