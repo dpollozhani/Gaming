@@ -1,10 +1,10 @@
 import streamlit as st
 import pandas as pd
 from igdb_calls import game_info, clean_game_info, company_info, clean_company_info, prompt_multiple_results, get_image_url
-from pathlib import Path
-import base64
+import os
 
-mode = 'test' #prod
+app_mode_environment = os.environ.get('GAME_APP_MODE')
+app_mode = 'test' if not app_mode_environment else app_mode_environment
 
 @st.cache
 def search(input, name_or_id='name', approximate=True):
@@ -40,12 +40,16 @@ def render(info, filters=None):
     df = drop(df, ['id', 'summary', 'name', 'description'])
     if filters:
         df = drop(df, filters)
-    return df
+    return df.set_index('Details').transpose()
 
-def get_possible_filters(info):
-    return list(set(info.keys()))
+title = '''
+    <div style ="background-color:white;padding:10px">
+    <h1 style ="color:black;text-align:center;">pana$onic 2001 Game Hub</h1>
+    <p style ="background-color:#b991cf;color:orange;font-style:oblique;text-align:center;">For games, look no further</p>
+    </div> 
+'''
 
-st.title('pana$onic 2001 Game Hub')
+st.markdown(title, unsafe_allow_html=True)
 
 #Search bar
 search_text = st.text_input(f'Search for a game:')
@@ -59,17 +63,20 @@ with col03:
         st.write('In case approximate search yields multiple results, a list is shown. If you get several matches with approximate search and you find what you were looking for in the list, you can choose "exact match" as a shortcut to search for that particular game.')
 
 approximate = True if match_type=='Approximate' else False
-
+multiple_results, raw_data = '', False
 try:
     if len(search_text) > 0:
+        multiple_results = 1
         raw_data = search(input=search_text, approximate=approximate)
         multiple_results = prompt_multiple_results(raw_data)
-        
-        #Too many results matching query -> prompt to select
-        if len(multiple_results) > 1:
-            search_text = st.selectbox('Multiple matches were found (first is shown). Narrow down your search:', list(multiple_results.keys()))
-            raw_data = search(input=multiple_results[search_text], name_or_id='id')
-
+    
+    #Too many results matching query -> prompt to select
+    if len(multiple_results) > 1:
+        new_search = st.selectbox('Multiple matches were found (first is shown). Narrow down your search:', list(multiple_results.keys()))
+        raw_data = search(input=multiple_results[new_search], name_or_id='id')
+        search_text = ''
+    
+    if raw_data:
         #Get data
         data = clean_game_info(raw_data[0])
         
@@ -78,7 +85,7 @@ try:
         header = f'<div><img style="float:right;", src="{image_path}", class="img-fluid"/><h2 style:"float:left;">{title}</h2><p>{summary}</p></div>'
         
         st.markdown(header, unsafe_allow_html=True)
-    
+
         col12, col22, col32 = st.beta_columns(3)
         col13, col23, col33 = st.beta_columns(3)
         remove_from_details = []
@@ -151,15 +158,18 @@ try:
             with st.beta_expander('Keywords'):
                 st.markdown(data['keywords'])
             remove_from_details.append('keywords')
+        
+        for i in ['id', 'summary', 'name']:
+            remove_from_details.append(i)
 
         #Expand for further details        
         with st.beta_expander('Further details'):
-            df = render(data, filters=remove_from_details)
-            df.rename(columns={'Details': ''}, inplace=True)
-            st.write(df.to_html(escape=False, index=False), unsafe_allow_html=True)
+            for key, value in data.items():
+                if key not in remove_from_details:
+                    st.markdown('* ' + '**' + str(key) + '**: ' + str(value), unsafe_allow_html=True)
 except Exception as e:
     st.error('Something went wrong. Please try again, for instance by changing match option or re-writing your query.')
-    if mode == 'test':
+    if app_mode == 'test':
         error_details = st.button('Show more details')
         if error_details:
             st.write(e)
