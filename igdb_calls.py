@@ -77,7 +77,8 @@ def game_info(name:str, approximate_match=True):
         data = get_data('games', query)
     except Exception as e:
         print('Check the query:', e)
-    return data
+    else:
+        return data
 
 def clean_game_info(info):
     clean_info = {}
@@ -118,7 +119,8 @@ def company_info(name:str, approximate_match=True):
         data = get_data('companies', query)
     except Exception as e:
         print('Check the query:', e)
-    return data
+    else:
+        return data
 
 def clean_company_info(info):
     clean_info = {}
@@ -162,7 +164,8 @@ def get_image_url(id, endpoint='games', img_type='cover'):
     except Exception as e:
         print('Cover not available:', e)
         url = ''
-    return url
+    else:
+        return url
 
 def company_game_ratings(company:str, cache_file=None):
     company_query = f'fields name, published; where name ~ "{company}";'
