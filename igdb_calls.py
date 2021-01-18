@@ -1,8 +1,8 @@
 from igdb_utilities import get_data, open_json, to_json
 import os
+import sys
+import inspect
 from pprint import pprint
-from time import sleep
-from datetime import datetime,timedelta
 #import pandas as pd
 
 rating_enum = {1: 'Three', 
@@ -37,14 +37,8 @@ game_category_enum = {0: 'Main game',
     4: 'Standalone expansion',
     5: 'Mod',
     6: 'Episode',
-    7: 'Season'}
-
-def multiquery(endpoint:str, result_name:str, query:str):
-    endpoint_result = f'query {endpoint} "{result_name}"'
-    query = '' if not query else query
-    multiquery = endpoint_result + ' {' + query + '};'
-    data = get_data('multiquery', multiquery)
-    return data
+    7: 'Season'
+}
 
 def game_info(input, name_or_id, approximate_match=True):
     fields = ''' age_ratings.*, 
@@ -71,7 +65,6 @@ def game_info(input, name_or_id, approximate_match=True):
         total_rating,
         url
     '''
-    
     try:  
         assert (name_or_id == 'name') or (name_or_id == 'id'), "Only name or id is accepted"
         if name_or_id == 'name':
@@ -81,7 +74,10 @@ def game_info(input, name_or_id, approximate_match=True):
         query = f'fields {fields}; where {name_query};'
         data = get_data('games', query)
     except Exception as e:
-        print('Check the query:', e)
+        print('==================')
+        print('Error in query:', e)
+        print('Module/Function : ' + os.path.basename(__file__) + ' ' + sys._getframe().f_code.co_name +'()') 
+        print('Called from     : ' + os.path.basename(inspect.stack()[1][1]) +' ' + inspect.stack()[1][3] + '()')
     else:
         return data
 
@@ -110,7 +106,28 @@ def clean_game_info(info):
     
     return clean_info
 
-def company_info(name:str, approximate_match=True):
+def involved_companies(game_id):
+    try:
+        query = f'fields involved_companies; where id = {game_id};'
+        data = get_data('games', query)
+        developers, publishers = {}, {}
+        company_ids = ','.join([str(id) for id in data[0]['involved_companies']])
+        sub_query = f'fields company.name, developer, publisher; where id = ({company_ids});'
+        company_names = get_data('involved_companies', sub_query)
+        for sub_dict in company_names:
+            if sub_dict['developer']:
+                developers[sub_dict['company']['id']] = sub_dict['company']['name']
+            if sub_dict['publisher']:
+                publishers[sub_dict['company']['id']] = sub_dict['company']['name']
+    except Exception as e:
+        print('==================')
+        print('Error in query:', e)
+        print('Module/Function : ' + os.path.basename(__file__) + ' ' + sys._getframe().f_code.co_name +'()') 
+        print('Called from     : ' + os.path.basename(inspect.stack()[1][1]) +' ' + inspect.stack()[1][3] + '()')
+    else:
+        return developers, publishers    
+
+def company_info(input, name_or_id, approximate_match=True):
     fields = ''' description,
         developed.name,
         name,
@@ -119,11 +136,18 @@ def company_info(name:str, approximate_match=True):
         websites.url
     '''
     try:
-        name_query = f'~ "{name}"' if not approximate_match else f'~ "{name}"*'
-        query = f'fields {fields}; where name {name_query};'
+        assert (name_or_id == 'name') or (name_or_id == 'id'), "Only name or id is accepted"
+        if name_or_id == 'name':
+            name_query = f'name ~ "{input}"' if not approximate_match else f'name ~ *"{input}"*'
+        else:
+            name_query = f'id = {input}'
+        query = f'fields {fields}; where {name_query};'
         data = get_data('companies', query)
     except Exception as e:
-        print('Check the query:', e)
+        print('==================')
+        print('Error in query:', e)
+        print('Module/Function : ' + os.path.basename(__file__) + ' ' + sys._getframe().f_code.co_name +'()') 
+        print('Called from     : ' + os.path.basename(inspect.stack()[1][1]) +' ' + inspect.stack()[1][3] + '()')
     else:
         return data
 
@@ -165,48 +189,54 @@ def get_image_url(id, endpoint='games', img_type='cover'):
         data = get_data(endpoint, query)
         url = 'https:' + data[0][img_type]['url']
     except Exception as e:
-        print('Cover not available:', e)
-        url = ''
+        print('==================')
+        print('Error in query:', e)
+        print('Module/Function : ' + os.path.basename(__file__) + ' ' + sys._getframe().f_code.co_name +'()') 
+        print('Called from     : ' + os.path.basename(inspect.stack()[1][1]) +' ' + inspect.stack()[1][3] + '()')
     else:
         return url
 
-def company_game_ratings(company:str, cache_file=None):
-    company_query = f'fields name, published; where name ~ "{company}";'
-    companies = get_data('companies', company_query)
-    
-    assert isinstance(companies, list) and len(companies) == 1, 'Too many companies where found with that name, please specify'
-    
-    if any(cache_file) and os.path.exists(cache_file):
-        cache = set([d['id'] for d in open_json(cache_file)])
-        print('Cache:', cache)
-    else:
-        cache = []
-
-    games = []
+def company_games(company):
     try:
-        print('Fetching games. Enjoy a cup of coffee in the meantime...')
-        start_time = datetime.now()
-        for game_id in companies[0]['published']:
-            if game_id not in cache:
-                if datetime.now() - start_time < timedelta(0,60):
-                    game_query = f'fields name, aggregated_rating, first_release_date; where id={game_id} & category=0;'
-                    game_data = get_data('games', game_query)
-                    if isinstance(game_data, list) and len(game_data) == 1:
-                        games.append(game_data[0])
-        games = sorted(games, key = lambda i: i.get('aggregated_rating', -1), reverse=True)
+        company_query = f'fields name, published, developed; where id = {company};'
+        companies = get_data('companies', company_query)
+        game_ids = []
+        if 'developed' in companies[0].keys():
+            game_ids += companies[0]['developed']
+        if 'published' in companies[0].keys():
+            game_ids += companies[0]['published']
+        game_ids = tuple(set(game_ids))
+    
+        game_query = f'fields name; sort rating desc; where id={game_ids} & category=0 & rating != null;'
+        game_data = get_data('games', game_query)
+    
+        games = []
+        for element in game_data:
+            games.append(element['name'])
+
     except Exception as e:
-        print('Error encountered:', e)
-    finally:
+        print('==================')
+        print('Error in query:', e)
+        print('Module/Function : ' + os.path.basename(__file__) + ' ' + sys._getframe().f_code.co_name +'()') 
+        print('Called from     : ' + os.path.basename(inspect.stack()[1][1]) +' ' + inspect.stack()[1][3] + '()')
+    else:
         return games
 
 def latest_releases(platform_name:str):
     pass
 
-        
-if __name__ == '__main__':
-    data = company_info('Nintendo', approximate_match=False)
-    pprint(clean_company_info(data[0]))
+def multiquery(endpoint:str, result_name:str, query:str):
+    endpoint_result = f'query {endpoint} "{result_name}"'
+    query = '' if not query else query
+    multiquery = endpoint_result + ' {' + query + '};'
+    data = get_data('multiquery', multiquery)
+    return data
 
-    #print(datetime.fromtimestamp(765244800).strftime('%Y-%m-%d'))
+if __name__ == '__main__':
+    #data = involved_companies(game_id='358')
+    #print(data)
+    data = company_games(company='421')
+    pprint(data)
+    
 
 
