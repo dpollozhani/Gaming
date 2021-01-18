@@ -1,6 +1,8 @@
 #Local
 data/
 test.py
+temp.py
+session_state.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
