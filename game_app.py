@@ -6,6 +6,7 @@ import os
 app_mode_environment = os.environ.get('GAME_APP_MODE')
 app_mode = 'test' if not app_mode_environment else app_mode_environment
 
+#TODO: create a better design on the main info row (e.g instead of bullet lists, simple comma separated values when the list tends to get long)
 @st.cache
 def search(input, name_or_id='name', approximate=True):
 
@@ -83,8 +84,8 @@ with col01:
 with col03:
     with st.beta_expander('?'):
         st.write('''In case approximate match yields multiple results, a list is shown. You can select from this list. 
-        Sometimes approximate search can yield many unwanted results, based on the vagueness of the search string. If so, try being more specific.
-        If you are absolutely certain about the name of the game, select exact match,'''
+        Sometimes approximate search can yield many unwanted results, depending on the vagueness of the search string. If so, try being more specific.
+        If you are absolutely certain about the name of the game, select exact match.'''
     )
 
 approximate = True if match_type=='Approximate' else False
