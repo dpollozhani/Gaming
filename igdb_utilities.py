@@ -1,5 +1,7 @@
 from igdb_authentication import get_token
 import os
+import sys
+import inspect
 import json
 from ast import literal_eval
 from igdb.wrapper import IGDBWrapper
@@ -12,8 +14,17 @@ def get_data(endpoint:str, query:str):
                 endpoint,
                 query 
                 )
-    
-    data = literal_eval(byte_array.decode('utf-8'))
+    try:
+        data = literal_eval(byte_array.decode('utf-8'))
+        exception_occurred = False
+    except Exception as e:
+        print('==================')
+        print('Warning: literal evaluation error in database query:', e, ': trying to load data as json file')
+        print('Module/Function : ' + os.path.basename(__file__) + ' ' + sys._getframe().f_code.co_name +'()') 
+        print('Called from     : ' + os.path.basename(inspect.stack()[1][1]) +' ' + inspect.stack()[1][3] + '()')
+        exception_occurred = True
+    if exception_occurred:
+        data = json.loads(byte_array)
 
     return data
 
