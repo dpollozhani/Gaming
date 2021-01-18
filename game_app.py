@@ -76,15 +76,15 @@ st.markdown(title, unsafe_allow_html=True)
 #Search bar
 search_text = st.text_input(f'Search for a game:')
 
-#Match option
+#Match option and explanation
 col01, _, col03= st.beta_columns(3)
 with col01:
     match_type = st.select_slider('Match option (case insensitive)', ['Approximate', 'Exact'])
 with col03:
     with st.beta_expander('?'):
-        st.write('''In case approximate search yields multiple results, a list is shown. 
-        If you get several matches with approximate search and you find what you were looking for in the list, 
-        you can choose "exact match" as a shortcut to search for that particular game.'''
+        st.write('''In case approximate match yields multiple results, a list is shown. You can select from this list. 
+        Sometimes approximate search can yield many unwanted results, based on the vagueness of the search string. If so, try being more specific.
+        If you are absolutely certain about the name of the game, select exact match,'''
     )
 
 approximate = True if match_type=='Approximate' else False
