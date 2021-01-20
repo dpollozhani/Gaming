@@ -3,6 +3,7 @@ import os
 import sys
 import inspect
 from pprint import pprint
+import random
 #import pandas as pd
 
 rating_enum = {1: 'Three', 
@@ -40,8 +41,7 @@ game_category_enum = {0: 'Main game',
     7: 'Season'
 }
 
-def game_info(input, name_or_id, approximate_match=True):
-    fields = ''' age_ratings.*, 
+game_fields = ''' age_ratings.*, 
         aggregated_rating,
         bundles.name,
         category,
@@ -65,13 +65,15 @@ def game_info(input, name_or_id, approximate_match=True):
         total_rating,
         url
     '''
+
+def game_info(input, name_or_id, approximate_match=True):
     try:  
         assert (name_or_id == 'name') or (name_or_id == 'id'), "Only name or id is accepted"
         if name_or_id == 'name':
             name_query = f'name ~ "{input}"' if not approximate_match else f'name ~ *"{input}"*'
         else:
             name_query = f'id = {input}' 
-        query = f'fields {fields}; where {name_query};'
+        query = f'fields {game_fields}; where {name_query};'
         data = get_data('games', query)
     except Exception as e:
         print('==================')
@@ -80,6 +82,19 @@ def game_info(input, name_or_id, approximate_match=True):
         print('Called from     : ' + os.path.basename(inspect.stack()[1][1]) +' ' + inspect.stack()[1][3] + '()')
     else:
         return data
+
+def lucky_game_info():
+    try:
+        query = f'fields {game_fields}; sort rating desc; limit 100; where rating != null & category=0;'
+        data = get_data('games', query)
+        idx = random.randint(0, len(data))
+    except Exception as e:
+        print('==================')
+        print('Error in query:', e)
+        print('Module/Function : ' + os.path.basename(__file__) + ' ' + sys._getframe().f_code.co_name +'()') 
+        print('Called from     : ' + os.path.basename(inspect.stack()[1][1]) +' ' + inspect.stack()[1][3] + '()')
+    else:
+        return [data[idx]]
 
 def clean_game_info(info):
     clean_info = {}
@@ -222,8 +237,17 @@ def company_games(company):
     else:
         return games
 
-def latest_releases(platform_name:str):
-    pass
+def top_rated():
+    try:
+        query = f'fields {game_fields};sort rating desc; where rating != null;'
+        data = get_data('games', query)
+    except Exception as e:
+        print('==================')
+        print('Error in query:', e)
+        print('Module/Function : ' + os.path.basename(__file__) + ' ' + sys._getframe().f_code.co_name +'()') 
+        print('Called from     : ' + os.path.basename(inspect.stack()[1][1]) +' ' + inspect.stack()[1][3] + '()')
+    else:
+        return data
 
 def multiquery(endpoint:str, result_name:str, query:str):
     endpoint_result = f'query {endpoint} "{result_name}"'
