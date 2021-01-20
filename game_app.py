@@ -1,6 +1,6 @@
 import streamlit as st
 import pandas as pd
-from igdb_calls import game_info, clean_game_info, involved_companies, company_games, prompt_multiple_results, get_image_url
+from igdb_calls import game_info, lucky_game_info, clean_game_info, involved_companies, company_games, prompt_multiple_results, get_image_url
 import os
 
 app_mode_environment = os.environ.get('GAME_APP_MODE')
@@ -13,6 +13,9 @@ def search(input, name_or_id='name', approximate=True):
     raw_info = game_info(input=input, name_or_id=name_or_id, approximate_match=approximate)
     
     return raw_info
+
+def lucky():
+    return lucky_game_info()
 
 @st.cache(show_spinner=False)
 def _clean_game_info(info):
@@ -64,6 +67,16 @@ def render(info, filters=None):
         df = drop(df, filters)
     return df.set_index('Details').transpose()
 
+@st.cache(show_spinner=False)
+def score_color(score):
+    if score > 69:
+        color = '#2e994a'
+    elif score > 40:
+        color = '#d4c64e'
+    else: 
+        color = '#d6200f'
+    return color
+
 #Title
 title = '''
     <div style ="background-color:white;padding:10px">
@@ -75,13 +88,19 @@ title = '''
 st.markdown(title, unsafe_allow_html=True)
 
 #Search bar
-search_text = st.text_input(f'Search for a game:')
+cols0, cols1 = st.beta_columns((4,1))
+with cols0:
+    search_text = st.text_input(f'Search for a game:')
+with cols1:
+    st.markdown('')
+    st.markdown('')
+    feeling_lucky = st.button('Feeling lucky')
 
 #Match option and explanation
-col01, _, col03= st.beta_columns(3)
+col01, _, col02 = st.beta_columns((2,2,2))
 with col01:
     match_type = st.select_slider('Match option (case insensitive)', ['Approximate', 'Exact'])
-with col03:
+with col02:
     with st.beta_expander('?'):
         st.write('''In case approximate match yields multiple results, a list is shown. You can select from this list. 
         Sometimes approximate search can yield many unwanted results, depending on the vagueness of the search string. If so, try being more specific.
@@ -91,17 +110,19 @@ with col03:
 approximate = True if match_type=='Approximate' else False
 multiple_results, raw_data = '', False
 
-#Main block
+
 try:
-    if len(search_text) > 0:
+    if feeling_lucky:
+        raw_data = lucky()
+    elif len(search_text) > 0:
         multiple_results = 1
         raw_data = search(input=search_text, approximate=approximate)
         multiple_results = _prompt_multiple_results(raw_data)
-    
-    #Too many results matching query -> prompt to select
-    if len(multiple_results) > 1:
-        new_search = st.selectbox('Multiple matches were found (first is shown). Narrow down your search:', list(multiple_results.keys()))
-        raw_data = search(input=multiple_results[new_search], name_or_id='id')
+        
+        #Too many results matching query -> prompt to select
+        if len(multiple_results) > 1:
+            new_search = st.selectbox('Multiple matches were found (first is shown). Narrow down your search:', list(multiple_results.keys()))
+            raw_data = search(input=multiple_results[new_search], name_or_id='id')
 
     if raw_data:
         #Get data
@@ -126,19 +147,14 @@ try:
         col13, col23, col33 = st.beta_columns(3)
         remove_from_details = []
         with col12:
-            st.markdown('### Critic metascore')
-            if 'aggregated_rating' in data.keys():
-                score = round(data['aggregated_rating'])
-                if score > 69:
-                    color = '#2e994a'
-                elif score > 40:
-                    color = '#d4c64e'
-                else: 
-                    color = '#d6200f'
-                score_markdown = f'<div style="background-color:{color};width:50px;height:55px;">'
-                score_markdown += f'<p style="font-size:25px;color:white;font-style:bold;padding:20%;text-alignment:center;">{score}</p></div>'
+            st.markdown('### Total rating')
+            if 'total_rating' in data.keys():
+                tot_score = round(data['total_rating'])
+                color = score_color(tot_score)
+                score_markdown = f'<div style="background-color:{color};width:5vw;height:55px;">'
+                score_markdown += f'<p style="font-size:2vw;color:white;font-style:bold;padding:13%;text-align:center;vertical-align:middle;">{tot_score}</p></div>'
                 st.markdown(score_markdown, unsafe_allow_html=True)
-                remove_from_details.append('aggregated_rating')
+                remove_from_details.append('total_rating')
             else:
                 st.markdown('No data available.')
         with col22:
@@ -163,8 +179,9 @@ try:
         with col32:
             st.markdown('### Available on')
             if 'platforms' in data.keys():
-                for p in data['platforms'].split(';'):
-                    st.markdown(f'{p}')
+                st.markdown(data['platforms'])
+                #for p in data['platforms'].split(';'):
+                #    st.markdown(f'{p}')
                 remove_from_details.append('platforms')
             else:
                 st.markdown('No data available.')
@@ -173,16 +190,18 @@ try:
         with col13:
             st.markdown('### Game modes')
             if 'game_modes' in data.keys():
-                for game_m in data['game_modes'].split(';'):
-                    st.markdown(f'{game_m}')
+                st.markdown(data['game_modes'])
+                #for game_m in data['game_modes'].split(';'):
+                #    st.markdown(f'{game_m}')
                 remove_from_details.append('game_modes')
             else:
                 st.markdown('No data available.')
         with col23:
-            st.subheader('Age rating')
+            st.subheader('Age recommendation')
             if 'age_ratings' in data.keys():
-                for age_r in data['age_ratings'].split(';'):
-                    st.markdown(f'{age_r}')
+                st.markdown(data['age_ratings'])
+                #for age_r in data['age_ratings'].split(';'):
+                #    st.markdown(f'{age_r}')
                 remove_from_details.append('age_ratings')
             else:
                 st.markdown('No data available.')
