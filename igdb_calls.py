@@ -117,8 +117,8 @@ def lucky_game_info(**where_filters):
     
     try:
         game_count = multiquery('games/count', 'Game count', f'fields name; where {query_appendix};')[0]['count']
-        offset = random.randint(0, game_count)
-        query = f'fields {game_fields}; limit 1; offset {offset}; where {query_appendix};' 
+        offset = random.randint(0, game_count-1)
+        query = f'fields {game_fields}; offset {offset}; limit 1; where {query_appendix};' 
         data = get_data('games', query)
         if len(data) == 0:
             raise Exception
@@ -128,7 +128,7 @@ def lucky_game_info(**where_filters):
         print('Module/Function : ' + os.path.basename(__file__) + ' ' + sys._getframe().f_code.co_name +'()') 
         print('Called from     : ' + os.path.basename(inspect.stack()[1][1]) +' ' + inspect.stack()[1][3] + '()')
     else:
-        return data
+        return data, game_count
 
 def clean_game_info(info):
     clean_info = {}
