@@ -85,7 +85,7 @@ def game_info(input, name_or_id, approximate_match=True):
     try:  
         assert (name_or_id == 'name') or (name_or_id == 'id'), "Only name or id is accepted"
         if name_or_id == 'name':
-            name_query = f'name ~ "{input}"' if not approximate_match else f'name ~ *"{input}"*'
+            name_query = f'name ~ "{input}"' if not approximate_match else f'name ~ "{input}"*'
         else:
             name_query = f'id = {input}' 
         query = f'fields {game_fields}; where {name_query};'
