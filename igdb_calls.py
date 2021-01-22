@@ -66,6 +66,21 @@ game_fields = ''' age_ratings.*,
         url
     '''
 
+def get_game_modes():
+    game_mode_list = get_data('game_modes', 'fields name; limit 50;')
+    game_mode_map = {g['name']: g['id'] for g in game_mode_list}
+    return game_mode_map
+
+def get_platforms():
+    platform_list = get_data('platforms', 'fields name; limit 50; where platform_family = (1,2,3,4,5) & platform_family != null;')
+    platform_map = {p['name']: p['id'] for p in platform_list}
+    return platform_map
+
+def get_genres():
+    genre_list = get_data('genres', 'fields name; limit 50;')
+    genre_map = {g['name']: g['id'] for g in genre_list}
+    return genre_map
+
 def game_info(input, name_or_id, approximate_match=True):
     try:  
         assert (name_or_id == 'name') or (name_or_id == 'id'), "Only name or id is accepted"
