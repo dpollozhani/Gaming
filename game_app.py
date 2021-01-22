@@ -154,7 +154,9 @@ with side_bar:
         where_filters['release_dates.date'] = min_year
 try:
     if feeling_lucky:
-        raw_data = lucky_game_info(**where_filters)
+        raw_data, game_count = lucky_game_info(**where_filters)
+        with side_bar:
+            st.text(f'Found {game_count} games with these constraints.')
     elif len(search_text) > 0:
         multiple_results = 1
         raw_data = search(input=search_text, approximate=approximate)
