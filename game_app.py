@@ -100,13 +100,9 @@ title = '''
 st.markdown(title, unsafe_allow_html=True)
 
 #Search bar
-cols0, cols1 = st.beta_columns((4,1))
-with cols0:
-    search_text = st.text_input(f'Search for a game:')
-with cols1:
-    st.markdown('')
-    st.markdown('')
-    feeling_lucky = st.button('Feeling lucky')
+search_text = st.text_input(f'Search for a game:')
+
+feeling_lucky = False
 
 #Match option and explanation
 col01, _, col02 = st.beta_columns((2,2,2))
@@ -138,6 +134,7 @@ with side_bar:
     platform_filters = st.multiselect('Platform', list(platform_map.keys()))
     rating_filter = st.slider('Minimum rating', min_value=10, max_value=100, value=70, step=10)
     year_filter = st.select_slider('Earliest release year', list(range(1985, datetime.today().year+1)), value=2010)
+    feeling_lucky = st.button('Lucky search')
     where_filters, genres, game_modes = {}, '', ''
     if genre_filters:
         genres = '[' + ','.join([str(genre_map[g]) for g in genre_filters]) + ']'
