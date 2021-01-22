@@ -2,6 +2,8 @@ import streamlit as st
 import pandas as pd
 from igdb_calls import game_info, lucky_game_info, clean_game_info, involved_companies, company_games, prompt_multiple_results, get_image_url
 import os
+from time import mktime
+from datetime import datetime
 
 app_mode_environment = os.environ.get('GAME_APP_MODE')
 app_mode = 'test' if not app_mode_environment else app_mode_environment
@@ -13,9 +15,6 @@ def search(input, name_or_id='name', approximate=True):
     raw_info = game_info(input=input, name_or_id=name_or_id, approximate_match=approximate)
     
     return raw_info
-
-def lucky():
-    return lucky_game_info()
 
 @st.cache(show_spinner=False)
 def _clean_game_info(info):
@@ -110,10 +109,64 @@ with col02:
 approximate = True if match_type=='Approximate' else False
 multiple_results, raw_data = '', False
 
+genre_map = {'Adventure': 31,
+ 'Arcade': 33,
+ 'Card & Board Game': 35,
+ 'Fighting': 4,
+ "Hack and slash/Beat 'em up": 25,
+ 'Indie': 32,
+ 'MOBA': 36,
+ 'Music': 7,
+ 'Pinball': 30,
+ 'Platform': 8,
+ 'Point-and-click': 2,
+ 'Puzzle': 9,
+ 'Quiz/Trivia': 26,
+ 'Racing': 10,
+ 'Real Time Strategy (RTS)': 11,
+ 'Role-playing (RPG)': 12,
+ 'Shooter': 5,
+ 'Simulator': 13,
+ 'Sport': 14,
+ 'Strategy': 15,
+ 'Tactical': 24,
+ 'Turn-based strategy (TBS)': 16,
+ 'Visual Novel': 34
+}
 
+game_mode_map = {'Battle Royale': 6,
+ 'Co-operative': 3,
+ 'Massively Multiplayer Online (MMO)': 5,
+ 'Multiplayer': 2,
+ 'Single player': 1,
+ 'Split screen': 4
+}
+
+#Side bar
+side_bar = st.sidebar.beta_container()
+with side_bar:
+    st.markdown('Try controlling your luck:')
+    genre_filters = st.multiselect('Genres', list(genre_map.keys()))
+    game_mode_filters = st.multiselect('Game mode', list(game_mode_map.keys()))
+    rating_filter = st.slider('Minimum rating', min_value=10, max_value=100, value=70, step=10)
+    year_filter = st.select_slider('Earliest release year', list(range(1985, datetime.today().year+1)), value=2010)
+    where_filters, genres, game_modes = {}, '', ''
+    if genre_filters:
+        genres = '(' + ','.join([str(genre_map[g]) for g in genre_filters]) + ')'
+        where_filters['genres'] = genres
+    if game_mode_filters:
+        game_modes = '(' + ','.join([str(game_mode_map[g]) for g in game_mode_filters]) + ')'
+        where_filters['game_modes'] = game_modes
+    if rating_filter:
+        min_rating = f'>={rating_filter}'
+        where_filters['rating'] = min_rating
+    if year_filter:
+        y = int(mktime(datetime(year_filter, 1, 1).timetuple()))
+        min_year = f'>={y}'
+        where_filters['release_dates.date'] = min_year
 try:
     if feeling_lucky:
-        raw_data = lucky()
+        raw_data = lucky_game_info(**where_filters)
     elif len(search_text) > 0:
         multiple_results = 1
         raw_data = search(input=search_text, approximate=approximate)
@@ -151,8 +204,8 @@ try:
             if 'total_rating' in data.keys():
                 tot_score = round(data['total_rating'])
                 color = score_color(tot_score)
-                score_markdown = f'<div style="background-color:{color};width:5vw;height:55px;">'
-                score_markdown += f'<p style="font-size:2vw;color:white;font-style:bold;padding:13%;text-align:center;vertical-align:middle;">{tot_score}</p></div>'
+                score_markdown = f'<div style="background-color:{color};width:80px;height:70px;">'
+                score_markdown += f'<p style="font-size:40px;color:white;font-style:bold;margin-left:auto;margin-right:auto;text-align:center;vertical-align:middle;">{tot_score}</p></div>'
                 st.markdown(score_markdown, unsafe_allow_html=True)
                 remove_from_details.append('total_rating')
             else:
