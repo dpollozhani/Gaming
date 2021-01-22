@@ -83,18 +83,37 @@ def game_info(input, name_or_id, approximate_match=True):
     else:
         return data
 
-def lucky_game_info():
+def lucky_game_info(**where_filters):
+    query_appendix = []
+    for name,value in where_filters.items():
+        equality = '='
+        if any(i in value for i in ['>=', '<=']):
+            equality = value[:2]
+            value = value[2:]
+        elif any(i in value for i in ['<', '>']):
+            equality = value[:1]
+            value = value[1:]
+        query_appendix.append(f'{name}{equality}{value}')
+    if len(query_appendix) > 0:
+        query_appendix = ' & '.join(query_appendix)
+    else:
+        query_appendix = ''
+    print(query_appendix)
+    
     try:
-        query = f'fields {game_fields}; sort rating desc; limit 100; where rating != null & category=0;'
+        game_count = multiquery('games/count', 'Game count', f'fields name; where {query_appendix};')[0]['count']
+        offset = random.randint(0, game_count)
+        query = f'fields {game_fields}; limit 1; offset {offset}; where {query_appendix};' 
         data = get_data('games', query)
-        idx = random.randint(0, len(data))
+        if len(data) == 0:
+            raise Exception
     except Exception as e:
         print('==================')
         print('Error in query:', e)
         print('Module/Function : ' + os.path.basename(__file__) + ' ' + sys._getframe().f_code.co_name +'()') 
         print('Called from     : ' + os.path.basename(inspect.stack()[1][1]) +' ' + inspect.stack()[1][3] + '()')
     else:
-        return [data[idx]]
+        return data
 
 def clean_game_info(info):
     clean_info = {}
