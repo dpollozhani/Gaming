@@ -1,6 +1,8 @@
 import streamlit as st
 import pandas as pd
-from igdb_calls import game_info, lucky_game_info, clean_game_info, involved_companies, company_games, prompt_multiple_results, get_image_url
+from igdb_calls import game_info, lucky_game_info, clean_game_info
+from igdb_calls import involved_companies, company_games, prompt_multiple_results, get_image_url
+from igdb_calls import get_game_modes, get_genres, get_platforms
 import os
 from time import mktime
 from datetime import datetime
@@ -8,7 +10,18 @@ from datetime import datetime
 app_mode_environment = os.environ.get('GAME_APP_MODE')
 app_mode = 'test' if not app_mode_environment else app_mode_environment
 
-#TODO: create a better design on the main info row (e.g instead of bullet lists, simple comma separated values when the list tends to get long)
+@st.cache(show_spinner=False)
+def _genres():
+    return get_genres()
+
+@st.cache(show_spinner=False)
+def _game_modes():
+    return get_game_modes()
+
+@st.cache(show_spinner=False)
+def _platforms():
+    return get_platforms()
+
 @st.cache
 def search(input, name_or_id='name', approximate=True):
 
@@ -109,54 +122,32 @@ with col02:
 approximate = True if match_type=='Approximate' else False
 multiple_results, raw_data = '', False
 
-genre_map = {'Adventure': 31,
- 'Arcade': 33,
- 'Card & Board Game': 35,
- 'Fighting': 4,
- "Hack and slash/Beat 'em up": 25,
- 'Indie': 32,
- 'MOBA': 36,
- 'Music': 7,
- 'Pinball': 30,
- 'Platform': 8,
- 'Point-and-click': 2,
- 'Puzzle': 9,
- 'Quiz/Trivia': 26,
- 'Racing': 10,
- 'Real Time Strategy (RTS)': 11,
- 'Role-playing (RPG)': 12,
- 'Shooter': 5,
- 'Simulator': 13,
- 'Sport': 14,
- 'Strategy': 15,
- 'Tactical': 24,
- 'Turn-based strategy (TBS)': 16,
- 'Visual Novel': 34
-}
+genre_map = _genres()
 
-game_mode_map = {'Battle Royale': 6,
- 'Co-operative': 3,
- 'Massively Multiplayer Online (MMO)': 5,
- 'Multiplayer': 2,
- 'Single player': 1,
- 'Split screen': 4
-}
+game_mode_map = _game_modes()
+
+platform_map = _platforms()
 
 #Side bar
 side_bar = st.sidebar.beta_container()
 with side_bar:
+    st.markdown('## Lucky Luke')
     st.markdown('Try controlling your luck:')
     genre_filters = st.multiselect('Genres', list(genre_map.keys()))
     game_mode_filters = st.multiselect('Game mode', list(game_mode_map.keys()))
+    platform_filters = st.multiselect('Platform', list(platform_map.keys()))
     rating_filter = st.slider('Minimum rating', min_value=10, max_value=100, value=70, step=10)
     year_filter = st.select_slider('Earliest release year', list(range(1985, datetime.today().year+1)), value=2010)
     where_filters, genres, game_modes = {}, '', ''
     if genre_filters:
-        genres = '(' + ','.join([str(genre_map[g]) for g in genre_filters]) + ')'
+        genres = '[' + ','.join([str(genre_map[g]) for g in genre_filters]) + ']'
         where_filters['genres'] = genres
     if game_mode_filters:
         game_modes = '(' + ','.join([str(game_mode_map[g]) for g in game_mode_filters]) + ')'
         where_filters['game_modes'] = game_modes
+    if platform_filters:
+        platforms = '(' + ','.join([str(platform_map[p]) for p in platform_filters]) + ')'
+        where_filters['platforms'] = platforms
     if rating_filter:
         min_rating = f'>={rating_filter}'
         where_filters['rating'] = min_rating
@@ -188,7 +179,7 @@ try:
         header = f'<div><img style="float:left;margin-right:10px;", src="{image_path}", class="img-fluid"/><h2>{title}</h2>'
         if 'genres' in data.keys():
             genres = data['genres'].split(';')
-            genres_text = ' '. join([genre.lower() for genre in genres])
+            genres_text = ' | '. join([genre.lower() for genre in genres])
             header += f'<p style="color:#e37e27;">{genres_text}</p>'
         header += f'<p>{summary}</p>'
         header += '</div>'
