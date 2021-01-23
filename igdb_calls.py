@@ -81,14 +81,16 @@ def get_genres():
     genre_map = {g['name']: g['id'] for g in genre_list}
     return genre_map
 
-def game_info(input, name_or_id, approximate_match=True):
+def game_info(input, name_or_id='name', approximate_match=True):
     try:  
         assert (name_or_id == 'name') or (name_or_id == 'id'), "Only name or id is accepted"
         if name_or_id == 'name':
-            name_query = f'name ~ "{input}"' if not approximate_match else f'name ~ "{input}"*'
+            if not approximate_match:
+                query = f'fields {game_fields}; where name ~ "{input}";'
+            else:
+                query = f'search "{input}"; fields {game_fields};' 
         else:
-            name_query = f'id = {input}' 
-        query = f'fields {game_fields}; where {name_query};'
+            query = f'fields {game_fields}; where id = {input};'
         data = get_data('games', query)
     except Exception as e:
         print('==================')
@@ -176,6 +178,50 @@ def involved_companies(game_id):
     else:
         return developers, publishers    
 
+def multiplayer_modes(game_id):
+    try:
+        fields = '''
+            campaigncoop,
+            lancoop,
+            offlinecoop,
+            offlinecoopmax,
+            offlinemax,
+            onlinecoop,
+            onlinecoopmax,
+            onlinemax,
+            splitscreen '''
+        
+        name_map = {
+            'campaigncoop': 'Campaign co-op',
+            'lancoop': 'LAN co-op',
+            'offlinecoop': 'Offline co-op',
+            'offlinecoopmax': 'Offline co-op max players',
+            'offlinemax': 'Offline max players',
+            'onlinecoop': 'Online co-op',
+            'onlinecoopmax': 'Online co-op max players',
+            'onlinemax': 'Online max players',
+            'splitscreen': 'Splitscreen'
+        }
+
+        query = f'fields {fields}; where game = {game_id};'
+        raw_data = get_data('multiplayer_modes', query)[0]
+        data = {}
+        
+        for key,value in raw_data.items():
+            if value == True:
+                data[name_map[key]] = 'Yes'
+            elif key == 'id' or value == False:
+                continue
+            else:
+                data[name_map[key]] = value
+    except Exception as e:
+        print('==================')
+        print('Error in query:', e)
+        print('Module/Function : ' + os.path.basename(__file__) + ' ' + sys._getframe().f_code.co_name +'()') 
+        print('Called from     : ' + os.path.basename(inspect.stack()[1][1]) +' ' + inspect.stack()[1][3] + '()')
+    else:
+        return data
+
 def company_info(input, name_or_id, approximate_match=True):
     fields = ''' description,
         developed.name,
@@ -251,12 +297,14 @@ def company_games(company):
         companies = get_data('companies', company_query)
         game_ids = []
         if 'developed' in companies[0].keys():
-            game_ids += companies[0]['developed']
+            game_ids += companies[0]['developed']*1
         if 'published' in companies[0].keys():
-            game_ids += companies[0]['published']
-        game_ids = tuple(set(game_ids))
-    
+            game_ids += companies[0]['published']*1
+        game_ids = set(game_ids)
+        game_ids = '(' + ','.join([str(g) for g in game_ids]) + ')'
+        
         game_query = f'fields name; sort rating desc; where id={game_ids} & category=0 & rating != null;'
+        
         game_data = get_data('games', game_query)
     
         games = []
