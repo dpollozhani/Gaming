@@ -181,6 +181,7 @@ def involved_companies(game_id):
 def multiplayer_modes(game_id):
     try:
         fields = '''
+            platform.name,
             campaigncoop,
             lancoop,
             offlinecoop,
@@ -203,17 +204,19 @@ def multiplayer_modes(game_id):
             'splitscreen': 'Splitscreen'
         }
 
-        query = f'fields {fields}; where game = {game_id};'
-        raw_data = get_data('multiplayer_modes', query)[0]
+        query = f'fields {fields}; where game = {game_id} & platform != null;'
+        raw_data = get_data('multiplayer_modes', query)
         data = {}
-        
-        for key,value in raw_data.items():
-            if value == True:
-                data[name_map[key]] = 'Yes'
-            elif key == 'id' or value == False:
-                continue
-            else:
-                data[name_map[key]] = value
+        for raw in raw_data:
+            temp_dict = {}
+            for key,value in raw.items():
+                if key == 'id' or key == 'platform' or value == False: 
+                    continue
+                elif value == True:
+                    temp_dict[name_map[key]] = 'Yes'
+                else:
+                    temp_dict[name_map[key]] = value
+            data[raw['platform']['name']] = temp_dict
     except Exception as e:
         print('==================')
         print('Error in query:', e)
