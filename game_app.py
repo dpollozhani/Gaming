@@ -1,7 +1,7 @@
 import streamlit as st
 import pandas as pd
 from igdb_calls import game_info, lucky_game_info, clean_game_info
-from igdb_calls import involved_companies, company_games, prompt_multiple_results, get_image_url
+from igdb_calls import involved_companies, company_games, multiplayer_modes, prompt_multiple_results, get_image_url
 from igdb_calls import get_game_modes, get_genres, get_platforms
 import os
 from time import mktime
@@ -44,6 +44,10 @@ def _involved_companies(game_id):
 @st.cache(show_spinner=False)
 def _company_games(company):
     return company_games(company)
+
+@st.cache(show_spinner=False)
+def _multiplayer_modes(game_id):
+    return multiplayer_modes(game_id)
 
 @st.cache(show_spinner=False)
 def _get_image_url(id, endpoint='games', img_type='cover'):
@@ -89,6 +93,12 @@ def score_color(score):
         color = '#d6200f'
     return color
 
+#Page config
+st.set_page_config(page_title='pana$onic 2001 game hub', page_icon='img/page_icon.jpg')
+
+#Page cover
+st.image('img/ori1.jpg', use_column_width=True,)
+
 #Title
 title = '''
     <div style ="background-color:white;padding:10px">
@@ -100,7 +110,7 @@ title = '''
 st.markdown(title, unsafe_allow_html=True)
 
 #Search bar
-search_text = st.text_input(f'Search for a game:')
+search_text = st.text_input('Search for a game (or expand left side bar for filtered search):')
 
 feeling_lucky = False
 
@@ -131,6 +141,8 @@ with side_bar:
     st.markdown('Try controlling your luck:')
     genre_filters = st.multiselect('Genres', list(genre_map.keys()))
     game_mode_filters = st.multiselect('Game mode', list(game_mode_map.keys()))
+    st.markdown('<font size="2">Online</font>', unsafe_allow_html=True)
+    online_mode = st.checkbox('')
     platform_filters = st.multiselect('Platform', list(platform_map.keys()))
     rating_filter = st.slider('Minimum rating', min_value=10, max_value=100, value=70, step=10)
     year_filter = st.select_slider('Earliest release year', list(range(1985, datetime.today().year+1)), value=2010)
@@ -142,6 +154,9 @@ with side_bar:
     if game_mode_filters:
         game_modes = '(' + ','.join([str(game_mode_map[g]) for g in game_mode_filters]) + ')'
         where_filters['game_modes'] = game_modes
+    if online_mode:
+        online_max = '>1'
+        where_filters['multiplayer_modes.onlinemax'] = online_max
     if platform_filters:
         platforms = '(' + ','.join([str(platform_map[p]) for p in platform_filters]) + ')'
         where_filters['platforms'] = platforms
@@ -153,11 +168,11 @@ with side_bar:
         min_year = f'>={y}'
         where_filters['release_dates.date'] = min_year
 try:
-    if feeling_lucky:
+    if feeling_lucky: #Lucky search
         raw_data, game_count = lucky_game_info(**where_filters)
         with side_bar:
             st.text(f'Found {game_count} games with these constraints.')
-    elif len(search_text) > 0:
+    elif len(search_text) > 0: #String search
         multiple_results = 1
         raw_data = search(input=search_text, approximate=approximate)
         multiple_results = _prompt_multiple_results(raw_data)
@@ -168,7 +183,7 @@ try:
             raw_data = search(input=multiple_results[new_search], name_or_id='id')
 
     if raw_data:
-        #Get data
+        #Get clean data
         data = _clean_game_info(raw_data[0])
         
         title, summary = ingress(data)
@@ -255,6 +270,13 @@ try:
                 remove_from_details.append('release_dates')
             else:
                 st.markdown('No data available.')
+
+        #Expand for multiplayer modes
+        multi_modes = _multiplayer_modes(data['id'])
+        if multi_modes:
+            with st.beta_expander('Multiplayer modes'):
+                for m, v in multi_modes.items():
+                    st.markdown(f'* {m}: {v}')
 
         #Expand for similar games        
         if 'similar_games' in data.keys(): 
