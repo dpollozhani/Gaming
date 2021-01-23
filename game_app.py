@@ -264,9 +264,9 @@ try:
             else:
                 st.markdown('No data available.')
         with col33:
-            st.markdown('### Released')
+            st.markdown('### First released')
             if 'release_dates' in data.keys():
-                released = sorted(data['release_dates'].split(';'), key=lambda x: datetime.strptime(x.strip(), '%b %d, %Y'))[0]
+                released = sorted(data['release_dates'].split(';'), key=lambda x: x.split(',')[-1])[0]
                 st.markdown(released)
                 remove_from_details.append('release_dates')
             else:
