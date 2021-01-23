@@ -266,7 +266,8 @@ try:
         with col33:
             st.markdown('### Released')
             if 'release_dates' in data.keys():
-                st.markdown(data['release_dates'].split(';')[-1])
+                released = sorted(data['release_dates'].split(';'), key=lambda x: datetime.strptime(x.strip(), '%b %d, %Y'))[0]
+                st.markdown(released)
                 remove_from_details.append('release_dates')
             else:
                 st.markdown('No data available.')
@@ -275,8 +276,12 @@ try:
         multi_modes = _multiplayer_modes(data['id'])
         if multi_modes:
             with st.beta_expander('Multiplayer modes'):
-                for m, v in multi_modes.items():
-                    st.markdown(f'* {m}: {v}')
+                for m, vals in multi_modes.items():
+                    v = [f'{x[0]}: {x[1]}' for x in vals.items()]    
+                    bullets = f'* {m}: \n'
+                    for w in v:
+                        bullets += f'  * {w}\n'
+                    st.markdown(bullets)
 
         #Expand for similar games        
         if 'similar_games' in data.keys(): 
