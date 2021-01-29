@@ -109,70 +109,77 @@ title = '''
 
 st.markdown(title, unsafe_allow_html=True)
 
-#Search bar
-search_text = st.text_input('Search for a game (or expand left side bar for filtered search):')
-
 feeling_lucky = False
+clear_all = False
+genre_map = _genres()
+game_mode_map = _game_modes()
+platform_map = _platforms()
 
-#Match option and explanation
-col01, _, col02 = st.beta_columns((2,2,2))
+#Front page
+#st.markdown('## Lucky Luke')
+st.markdown('Find a game based on filters:')
+col01, col02, col03 = st.beta_columns((2,2,2))
 with col01:
+    genre_filters = st.multiselect('Genres', list(genre_map.keys()))
+    rating_filter = st.slider('Minimum rating', min_value=10, max_value=100, value=70, step=10)
+with col02:    
+    game_mode_filters = st.multiselect('Game mode', list(game_mode_map.keys()))
+    st.markdown('<font size="2">Online</font>', unsafe_allow_html=True)
+    online_mode = st.checkbox('')
+with col03:
+    platform_filters = st.multiselect('Platform', list(platform_map.keys()))
+    year_filter = st.select_slider('Earliest release year', list(range(1985, datetime.today().year+1)), value=2010)
+
+feeling_lucky = st.button('Lucky search')
+st.markdown(' ')
+clear_all = st.button('Clear')
+where_filters, genres, game_modes = {}, '', ''
+
+if genre_filters:
+    genres = '[' + ','.join([str(genre_map[g]) for g in genre_filters]) + ']'
+    where_filters['genres'] = genres
+if game_mode_filters:
+    game_modes = '(' + ','.join([str(game_mode_map[g]) for g in game_mode_filters]) + ')'
+    where_filters['game_modes'] = game_modes
+if online_mode:
+    online_max = '>1'
+    where_filters['multiplayer_modes.onlinemax'] = online_max
+if platform_filters:
+    platforms = '(' + ','.join([str(platform_map[p]) for p in platform_filters]) + ')'
+    where_filters['platforms'] = platforms
+if rating_filter:
+    min_rating = f'>={rating_filter}'
+    where_filters['rating'] = min_rating
+if year_filter:
+    y = int(mktime(datetime(year_filter, 1, 1).timetuple()))
+    min_year = f'>={y}'
+    where_filters['release_dates.date'] = min_year
+
+#Side bar
+side_bar = st.sidebar.beta_container()
+with side_bar:
+    #Search bar
+    search_text = st.text_input('Search for a game:', value='')
+    if clear_all:
+        search_text = ''
+
+    #Match option and explanation
     match_type = st.select_slider('Match option (case insensitive)', ['Approximate', 'Exact'])
-with col02:
     with st.beta_expander('?'):
         st.write('''In case approximate match yields multiple results, a list is shown. You can select from this list. 
         Sometimes approximate search can yield many unwanted results, depending on the vagueness of the search string. If so, try being more specific.
         If you are absolutely certain about the name of the game, select exact match.'''
     )
-
+    
 approximate = True if match_type=='Approximate' else False
 multiple_results, raw_data = '', False
 
-genre_map = _genres()
-
-game_mode_map = _game_modes()
-
-platform_map = _platforms()
-
-#Side bar
-side_bar = st.sidebar.beta_container()
-with side_bar:
-    st.markdown('## Lucky Luke')
-    st.markdown('Try controlling your luck:')
-    genre_filters = st.multiselect('Genres', list(genre_map.keys()))
-    game_mode_filters = st.multiselect('Game mode', list(game_mode_map.keys()))
-    st.markdown('<font size="2">Online</font>', unsafe_allow_html=True)
-    online_mode = st.checkbox('')
-    platform_filters = st.multiselect('Platform', list(platform_map.keys()))
-    rating_filter = st.slider('Minimum rating', min_value=10, max_value=100, value=70, step=10)
-    year_filter = st.select_slider('Earliest release year', list(range(1985, datetime.today().year+1)), value=2010)
-    feeling_lucky = st.button('Lucky search')
-    where_filters, genres, game_modes = {}, '', ''
-    if genre_filters:
-        genres = '[' + ','.join([str(genre_map[g]) for g in genre_filters]) + ']'
-        where_filters['genres'] = genres
-    if game_mode_filters:
-        game_modes = '(' + ','.join([str(game_mode_map[g]) for g in game_mode_filters]) + ')'
-        where_filters['game_modes'] = game_modes
-    if online_mode:
-        online_max = '>1'
-        where_filters['multiplayer_modes.onlinemax'] = online_max
-    if platform_filters:
-        platforms = '(' + ','.join([str(platform_map[p]) for p in platform_filters]) + ')'
-        where_filters['platforms'] = platforms
-    if rating_filter:
-        min_rating = f'>={rating_filter}'
-        where_filters['rating'] = min_rating
-    if year_filter:
-        y = int(mktime(datetime(year_filter, 1, 1).timetuple()))
-        min_year = f'>={y}'
-        where_filters['release_dates.date'] = min_year
 try:
     if feeling_lucky: #Lucky search
         raw_data, game_count = lucky_game_info(**where_filters)
-        with side_bar:
-            st.text(f'Found {game_count} games with these constraints.')
+        st.text(f'Found {game_count} games with these constraints. Showing one of these.')
     elif len(search_text) > 0: #String search
+        st.markdown('-------')
         multiple_results = 1
         raw_data = search(input=search_text, approximate=approximate)
         multiple_results = _prompt_multiple_results(raw_data)
@@ -180,6 +187,7 @@ try:
         #Too many results matching query -> prompt to select
         if len(multiple_results) > 1:
             new_search = st.selectbox('Multiple matches were found (first is shown). Narrow down your search:', list(multiple_results.keys()))
+            st.markdown('-------')
             raw_data = search(input=multiple_results[new_search], name_or_id='id')
 
     if raw_data:
