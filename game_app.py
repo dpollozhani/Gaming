@@ -94,10 +94,10 @@ def score_color(score):
     return color
 
 #Page config
-st.set_page_config(page_title='pana$onic 2001 game hub', page_icon='img/page_icon.jpg')
+st.set_page_config(page_title='pana$onic 2001 game hub', page_icon='img/page_icon.jpg', layout='wide')
 
 #Page cover
-st.image('img/ori1.jpg', use_column_width=True,)
+st.image('img/wallpaperflare.com_wallpaper.jpg', use_column_width=True)
 
 #Title
 title = '''
@@ -110,14 +110,14 @@ title = '''
 st.markdown(title, unsafe_allow_html=True)
 
 feeling_lucky = False
-clear_all = False
 genre_map = _genres()
 game_mode_map = _game_modes()
 platform_map = _platforms()
 
-#Front page
-#st.markdown('## Lucky Luke')
-st.markdown('Find a game based on filters:')
+#FRON PAGE
+
+#Filtered search
+st.markdown('#### Find a game based on filters')
 col01, col02, col03 = st.beta_columns((2,2,2))
 with col01:
     genre_filters = st.multiselect('Genres', list(genre_map.keys()))
@@ -131,8 +131,7 @@ with col03:
     year_filter = st.select_slider('Earliest release year', list(range(1985, datetime.today().year+1)), value=2010)
 
 feeling_lucky = st.button('Lucky search')
-st.markdown(' ')
-clear_all = st.button('Clear')
+st.markdown('-------')
 where_filters, genres, game_modes = {}, '', ''
 
 if genre_filters:
@@ -155,16 +154,15 @@ if year_filter:
     min_year = f'>={y}'
     where_filters['release_dates.date'] = min_year
 
-#Side bar
-side_bar = st.sidebar.beta_container()
-with side_bar:
-    #Search bar
-    search_text = st.text_input('Search for a game:', value='')
-    if clear_all:
-        search_text = ''
+#Search bar
+st.markdown('#### Find a game by title')
+search_text = st.text_input('Search:', value='')
 
-    #Match option and explanation
+#Match option and explanation
+match_cols = st.beta_columns((2,5))
+with match_cols[0]:
     match_type = st.select_slider('Match option (case insensitive)', ['Approximate', 'Exact'])
+with match_cols[1]:    
     with st.beta_expander('?'):
         st.write('''In case approximate match yields multiple results, a list is shown. You can select from this list. 
         Sometimes approximate search can yield many unwanted results, depending on the vagueness of the search string. If so, try being more specific.
@@ -175,18 +173,22 @@ approximate = True if match_type=='Approximate' else False
 multiple_results, raw_data = '', False
 
 try:
+    st.markdown(' ')
     if feeling_lucky: #Lucky search
         raw_data, game_count = lucky_game_info(**where_filters)
+        st.markdown('#### Results')
+        st.markdown(' ')
         st.text(f'Found {game_count} games with these constraints. Showing one of these.')
     elif len(search_text) > 0: #String search
-        st.markdown('-------')
+        st.markdown('#### Results')
+        st.markdown(' ')
         multiple_results = 1
         raw_data = search(input=search_text, approximate=approximate)
         multiple_results = _prompt_multiple_results(raw_data)
         
         #Too many results matching query -> prompt to select
         if len(multiple_results) > 1:
-            new_search = st.selectbox('Multiple matches were found (first is shown). Narrow down your search:', list(multiple_results.keys()))
+            new_search = st.selectbox('Multiple matches were found (first is shown). You may narrow down your search:', list(multiple_results.keys()))
             st.markdown('-------')
             raw_data = search(input=multiple_results[new_search], name_or_id='id')
 
