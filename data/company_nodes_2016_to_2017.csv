@@ -1,0 +1,703 @@
+id,name
+1,Electronic Arts
+2,BioWare
+4,Eidos Interactive
+5,Interplay Entertainment
+10,LucasArts
+11,EA Redwood Shores
+12,Black Isle Studios
+24,Sierra Entertainment
+26,Square Enix
+27,Eidos Montréal
+36,Frictional Games
+37,Capcom
+39,Ubisoft Annecy
+50,WB Games
+53,Microsoft Game Studios
+56,Valve Corporation
+58,Mojang Studios
+70,Nintendo
+72,Vicarious Visions
+75,Factor 5
+80,Vivendi Games
+82,Atari
+91,Playmates Interactive Entertainment
+97,New World Computing
+104,Ubisoft Entertainment
+110,Focus Home Interactive
+111,The Creative Assembly
+113,Westwood Studios
+115,Codemasters
+137,Digital Illusions CE
+139,Take-Two Interactive
+145,cdv Software Entertainment
+146,Strategy First
+176,FX Interactive
+182,Nihilistic Software
+188,Apogee Software
+190,Atari Corporation
+195,Brøderbund Software
+196,Relic Entertainment
+197,THQ
+213,Infogrames
+215,WizardWorks Software
+216,Glu Mobile
+221,Splash Damage
+234,Cryo Interactive
+236,DreamCatcher Interactive
+248,Bandai Namco Entertainment
+250,Square
+251,Sunsoft
+252,Square Electronic Arts
+258,KnowWonder
+260,Argonaut Games
+277,EA Canada
+283,The Sims Studio
+290,IO Interactive
+291,Nixxes Software
+292,Traveller's Tales
+294,Telltale Games
+317,Dynamix
+319,n-Space
+321,Tose
+327,Midway Games
+329,Cavia
+340,Empire Interactive
+348,Exient Entertainment
+374,Koch Media
+395,Sonic Team
+401,Naughty Dog
+408,TimeGate Studios
+414,Croteam
+423,Deep Silver
+432,Beenox
+438,Infinity Ward
+445,505 Games
+449,D3 Publisher
+454,EA Sports
+512,Ocean
+517,Paradox Interactive
+528,"SSI (Strategic Simulations, Inc.)"
+532,Probe Entertainment
+547,Accolade
+552,Crystal Dynamics
+555,EA Tiburon
+606,DreamForge Intertainment
+617,Bandai
+630,Koei
+634,Devolver Digital
+659,Sledgehammer Games
+667,Crave Entertainment
+684,Budcat Creations
+691,HeadGames
+692,High Score Productions
+700,Majesco Entertainment
+702,Ubisoft Montpellier
+716,Natsume
+717,Red Storm Entertainment
+724,Ultimation
+737,Exosyphen Studios
+762,HAL Laboratory
+765,"Intelligent Systems Co., Ltd."
+771,Rare
+781,M2
+782,Marvelous Entertainment
+790,Wargaming.net
+794,Virtuos
+795,Ninja Theory
+796,Infinite Game Publishing
+797,"h.a.n.d., Inc."
+806,Tantalus Interactive
+817,Taito
+818,Atlus
+819,Neverland
+820,Working Designs
+821,TDK Mediactive
+836,Kadokawa Games
+837,Level-5
+840,Ubisoft Sofia
+843,Harmonix Music Systems
+845,Grasshopper Manufacture
+851,ZeniMax Online Studios
+858,Koei Tecmo Games
+863,Takara
+872,Altron
+874,Smilebit
+876,Sora
+886,Just Games Interactive
+888,Digital Eclipse
+896,(Archive) Ubisoft Quebec
+942,Graviteam
+943,Colossal Order
+1014,Data Design Interactive
+1021,WayForward Technologies Inc.
+1027,"Distinctive Software, Inc."
+1033,SCE London Studio
+1046,Stormfront Studios
+1054,Next Level Games
+1058,Xicat Interactive
+1121,Atarisoft
+1127,Infinite Interactive
+1128,1st Playable Productions
+1154,International Computer Entertainment
+1189,TopWare Interactive
+1193,Synthetic Dimensions
+1212,CI Games
+1216,Pyramid
+1218,Arc System Works
+1256,BigPark
+1278,Paradigm Entertainment
+1281,Kemco
+1285,King Games
+1287,Irem
+1326,Amaze Entertainment
+1352,The Avalon Hill Game Company
+1363,Akella
+1375,Firebird
+1383,ACQUIRE Corp.
+1401,Oxeye Game Studio
+1436,Bally Midway
+1440,Taito Corporation
+1460,Plug In Digital
+1462,Quadriga Games
+1466,Mastertronic
+1493,Crescent Moon Games
+1531,22Cans
+1552,Astragon
+1570,Treco
+1617,Game Freak
+1668,Mumbo Jumbo
+1733,Mobius Entertainment
+1772,Marvelous AQL
+1774,Nintendo R&D2
+1783,Midway Home Entertainment
+1811,Electro Brain
+1831,Compile
+1847,RFX Interactive
+1905,Helixe
+1927,Sand Grain Studios
+1947,Tomy
+1956,Idea Factory
+1979,Dearsoft
+1985,Melbourne House
+1992,Kush Games
+2000,Cat Daddy Games
+2040,Wanadoo Edition
+2042,Contrail
+2071,Ariolasoft
+2078,Hot Lava Games
+2079,Nordcurrent
+2083,Metro 3D
+2104,Google
+2171,Warhorse Studios
+2177,Erbe Software
+2206,Shade
+2225,NanaOn-Sha
+2237,SideQuest Studios
+2252,Compile Heart
+2305,Jorudan
+2324,CyberFront Korea
+2346,Time Warner Interactive
+2365,Micronet
+2387,Studio Alex
+2402,Eat Sleep Play Inc.
+2428,5pb.
+2442,Targem Games
+2519,Sears
+2522,Imagic
+2527,"indieszero Co., Ltd."
+2531,Dinamic Software
+2582,SNK Playmore
+2674,Nintendo SPD Group No. 1
+2676,Media.Vision
+2678,Data East
+2723,Streum On Studio
+2729,Frozenbyte
+2736,Adhesive Games
+2751,Nihon Falcom
+2766,Tomorrow Corporation
+2801,Frame Studios
+2813,Game Titan
+2913,Untold Games
+2921,Ubisoft Kiev
+2923,Toybox Inc.
+3020,JAST USA
+3115,Bluehole Studio
+3225,CreativeForge Games
+3227,Zoo Corporation
+3690,Tectoy
+3706,Thinking Rabbit
+3928,Ubisoft Chengdu
+3958,Bandai Namco Games
+4075,Software Projects
+4091,PQube
+4265,Netchubiyori
+4290,Victor Musical Industries
+4517,"Hoplite Research, LLC"
+4612,The Digital Lounge
+4726,Merge Games
+4741,Forever Entertainment S. A.
+4760,Cherry Pop Games
+4809,The Game Kitchen
+4981,Sega Enterprises
+5083,Reverge Labs
+5149,Niels Bauer Games
+5169,Armor Games
+5188,MangaGamer
+5319,Sierra Online
+5325,Sekai Project
+5620,Intragames
+5961,The Coalition
+5996,MAGES.
+6029,Future Games
+6053,Gathering
+6071,Marvelous
+6118,Phoenix Games B.V.
+6183,Nkidu Games Inc.
+6202,Flying Interactive
+6326,Corbie Games
+6330,Namco Bandai Games
+6346,JAMDAT Mobile
+6356,Electronic Zoo
+6364,General Computer Corporation (GCC)
+6379,CIRCLE Entertainment
+6445,Winking Entertainment
+6564,LOOT Interactive
+6574,DMM.com
+6958,Digital Melody
+6963,Firemonkeys Studios
+6965,Allods Team
+6989,Mommy's Best Games
+7041,Ubisoft
+7172,Rainbird
+7404,Cobra Soft
+7432,Retroism
+7571,Virtual Basement LLC
+7676,Chubby Pixel
+7677,Giulia Airoldi
+7701,Dovetail Games
+7855,"Hit-Point Co., Ltd."
+7875,Fallen Tree Games
+7890,Merscom
+7944,Hip Soft
+7948,Joju Games
+7949,Linksolutions Ltd.
+7972,Exkee
+8038,Ivanoff Interactive
+8133,"Mine Loader Software Co., Ltd."
+8136,United Independent Entertainment GmbH
+8167,Fabio Mosca
+8207,"Marvelous USA, Inc."
+8215,OVERDRIVE
+8282,Arachnid Games
+8299,Slitherine Ltd.
+8359,Nowhere Studios
+8431,Nexon
+8554,Christoph Winkler
+8574,Unknown Identity
+8584,Digital Dreams Entertainment LLC
+8628,Alawar Entertainment
+8652,Hunted Cow Studios
+8803,Anthony Case
+8985,PIPE Studio
+8994,Idigicon
+9005,PlayWay S.A.
+9039,Daniel Linssen
+9043,Ravenscourt
+9066,Marvelous Europe Ltd.
+9079,Juniper Games
+9372,Fairchild Semiconductor
+9378,Team Shanghai Alice
+9384,The Man Breeze
+9422,Alexey Bokulev
+9424,Charlie Oscar Lima Tango Interactive Entertainment
+9465,Sirius Software
+9539,GCE
+9602,rotobee
+9603,Dino Dini
+9608,Bandai Namco Entertainment America
+9989,E-Wan Entertainment
+10024,"Idea Factory International, Inc."
+10030,Steve Gal
+10068,Masaya
+10077,Teque London
+10100,Sony Interactive Entertainment
+10282,Sony Corporation
+10326,Aisystem Tokyo
+10327,Studio Voltz
+10528,Addictive Games Ltd
+10549,HypeTrain Digital
+10570,Pippin Barr
+10599,CBS Software
+10817,"Ultrasoft, Inc."
+10983,TDK
+11171,Majesco Sales
+11239,Xing Interactive
+11589,Green Stripe Snake
+11613,Argus Press Software Ltd.
+11740,Bird Studio
+11746,Hamumu Software
+11760,ForwardWorks
+11763,Kaos
+11941,Asmodee Digital
+11973,Phenomedia Publishing
+12126,Suricate Software
+12207,Long Hat House
+12295,Play Ten Interactive
+12540,Piko Interactive
+12775,Straylight Entertainment
+12817,Starloop Studios
+12824,Mesa Logic
+12832,The Gentlebros Pte. Ltd.
+12851,Streetwise
+12930,Software Creations Ltd.
+12938,M.C. Lothrorien Ltd
+13068,mebius
+13173,"SOTSU CO.,LTD."
+13189,No More Robots
+13245,Drago Entertainment
+13291,Imaginati Studios
+13344,Dagestan Technology
+13394,Armor Games Studios
+13480,Infomedia France
+13579,PUBG Corp
+13633,Sandbox Studios
+13648,Unties
+13689,Incal Product
+13722,Digital Eclipse Software
+13723,"Stern Electronics, Inc."
+13881,West One
+13913,Enjoy Gaming Ltd.
+13995,Virgin Play
+14023,Iggymob
+14064,Ruby Party
+14123,Open Sesame
+14154,"GULTI Co., Ltd."
+14185,Enjoy Games
+14282,E-Studio
+15145,Ionos
+15206,VirtualMind
+15212,Top Hat Studios Inc
+15226,Critical Bliss
+15227,dev4play
+15250,Denpasoft
+15291,SONKA
+15299,PlayStack Ltd
+15436,Petite Games
+15470,bit Gimmicks
+15505,Gus Martin
+15515,Zerouno Games
+15517,Delirma
+15599,AstralSystem
+15608,MIKAGE LLC.
+15609,Anima Project
+15663,"Nikita ""Ghost_RUS"""
+15867,Capitol Ideas Software
+15878,Sega Games
+15898,APXSoftware
+16052,Layopi Games
+16064,Craneballs Studio
+16106,Robert Hendry
+16181,Sviper
+16213,Strictly Limited Games
+16233,CubeGame
+16260,"Extreme Co.,Ltd"
+16437,Team17
+16698,Bit Golem
+16892,Disco
+16968,Nippon Computer Systems
+17160,Virgin Interactive Entertainment
+17183,HAMSTER
+17200,Dilemma Studio
+17213,Xbox Live Arcade
+17232,Grumpy
+17560,Creobit
+17910,DOMO Production
+17930,Axel Corporation
+17947,Ultimate Games
+18084,GameOn Production
+18099,European Games Group AG
+18182,轻文
+18204,0Cube
+18206,90Games
+18295,"Ryu Productions Co., Ltd"
+18325,STUDIO TOKOYO
+18470,Akatsuki Works
+18474,1C Entertainment
+18476,Games Operators
+18561,DLsite
+18629,Fellow Traveller
+18754,GrabTheGames
+18911,Laush Studio
+19046,Whitethorn Digital
+19054,Happy Corruption
+19083,Monad Rock
+19181,Walkabout Games
+19239,Kanawo
+19866,Maple Whispering Limited
+19896,Volcanicc
+20209,Fibrum Limited
+20647,Coffee Addict Studio
+20842,Neetpia
+20874,Joymoa
+20896,The Yogscast
+20926,Toucan Studio
+21166,ERS G-Studio
+21212,KanedaGames
+21386,No Gravity Games
+21576,Entertainment Forge
+21811,Argo Games
+22178,Independent Arts Software GmbH
+22403,Ed Salisbury
+22404,Ray Yep Jr.
+22440,papercookies
+22476,Protocol Games
+22623,Star Link
+22624,Well Made
+22721,Bandai Namco Studios
+22751,NCS Masaya
+22800,KSS Media Entertainment
+23048,Far East War Development Team
+23088,Circle Poison
+23248,Sweet & Tea
+23260,Sony Electronic Publishing Company
+23791,Shaftesbury Lucid
+23904,Byte Barrel
+23956,Brave At Night
+23998,FVRING
+24142,Volframe
+24183,Telenet
+24186,Rage Games Ltd.
+24213,Interplay
+24249,Fireart Games
+24291,Destinedjagold
+24700,Dreambakers
+24762,Cyro Interactive
+24866,Growing Seeds
+24884,Greenstreet Games
+24910,jota-gil
+25068,Yes Productions
+25230,St. GIGA
+25507,VEWO Interactive Inc
+25708,Gabriel Toschi
+25737,Gungho Games
+25757,Fan-na
+25918,Mario Fan Games Galaxy
+25956,Arcade Zone
+26244,Insatiable Cycle
+26323,Enix
+26774,赤山游戏工作室
+27333,Camerica Limited
+27498,Extreme
+27609,The Rugby Circle
+27700,Cat Manning
+27726,Caleb Wilson
+27934,The 8th Day
+28195,LucyDream
+28208,Vortex
+28524,Crossingstar Studio
+28525,42 Foundation
+30853,Arcadia Soft
+31456,RIVER CROW STUDIO
+23,Feral Interactive
+38,Ubisoft Montreal
+45,"Sony Computer Entertainment, Inc. (SCEI)"
+62,Griptonite Games
+66,Activision
+71,Raven Software
+74,CyberFront
+112,Sega
+128,Microsoft
+157,1C Company
+167,People Can Fly
+175,Haemimont Games
+184,id Software
+189,BAM! Entertainment
+194,Hothouse Creations
+205,GT Interactive
+229,SEGA of America
+263,Namco
+268,Global Star Software
+310,Ultra Games
+334,Sony Computer Entertainment Europe
+355,Zoo Digital
+366,Epyx
+373,Ascaron Entertainment
+398,Ubisoft Shanghai
+466,Interactive Magic
+538,Viva Media
+543,Rage Software
+568,SegaSoft
+595,VU Games
+688,S2 Games
+694,Visual Concepts
+697,Ubisoft Bucharest
+746,Media Molecule
+800,Jupiter Corporation
+804,Beam Software
+815,Vivendi Universal Games
+832,Rising Star Games
+833,Ignition Entertainment
+847,Ubisoft Toronto
+862,Tamsoft
+864,Hudson Soft
+880,Domark Software
+899,Ubisoft Milan
+904,SoftBank
+934,Iridon Interactive AB
+951,Sunflowers Interactive Entertainment Software
+1010,Microsoft Studios
+1053,Spike
+1069,"SIMS Co., Ltd"
+1084,Millennium Interactive
+1117,Lace Mamba Global
+1137,Milton Bradley
+1149,Virtual Sports Interactive
+1207,Level Infinity
+1215,Banpresto
+1295,Point of View
+1316,Black Lantern Studios
+1336,A2M
+1339,Elite Systems
+1371,General Arcade
+1405,Nippon Ichi Software
+1488,Activision Value
+1489,Video System
+1566,Agetec
+1766,Pack-In-Video
+1839,Williams Electronics
+1844,Boss Game Studios
+1860,Virgin Entertainment
+1913,tri-Crescendo
+1922,Racjin
+1972,Adrenium Games
+1978,Team Fusion
+1996,Toei Animation
+2001,2K Play
+2020,"Tecmo Co., Ltd."
+2023,Sony Music Entertainment Japan
+2039,Tommo Inc
+2073,Toaplan
+2097,20th Century Fox Games
+2102,Zoo Games
+2144,Sproing Interactive Media
+2187,XSEED Games
+2191,Funbox Media
+2245,Big Fish Games
+2248,Daedalic Entertainment
+2259,Radon Labs
+2262,NIS America
+2361,Seismic
+2406,"Atari, Inc."
+2447,Origin8
+2503,Lego Software
+2737,Meteor Entertainment
+2809,NCS Corporation
+2926,Three Rings Inc.
+3032,Prototype
+3037,Maximum Games
+3212,Gremlin Graphics Software Ltd.
+3494,Twentieth Century Fox
+3715,Hewson Consultants
+3820,KISS ltd
+4442,Newgrounds
+4514,Atlantean Interactive Games
+4607,Otomate
+4996,Humble Bundle
+5024,Bandai Namco Holdings
+5064,Jeff Tunnell Productions
+5082,Lab Zero Games
+5089,Arkedo Studio
+5292,KCEO
+5318,Wanako Studios Ltd.
+5346,HAMSTER Corporation
+5835,Littlewitch
+5987,Lilith
+6033,Grolier Interactive
+6060,Soft Pro International
+6069,Kee Games
+6198,Fishcow Studio
+6441,Game Mechanic Studios
+6647,Piccolo Studio
+7408,Design Design
+7517,"Namco Networks America, Inc."
+7620,Turtle Cream
+7689,Thunder Mountain
+7903,My.com
+7947,Freeze Tag Inc.
+8127,D3 Go!
+8224,Aerosoft GmbH
+9022,BlueEagle Productions
+9425,Yukitama Creative Industries
+10098,SNK of America
+10139,Gainax
+10295,Hidden Variable Studios
+10464,Kiya Overseas Industry
+10536,Nordic Softsales AB
+10606,GTArcade Entertainment
+11008,OXON Game Studio
+11151,CRL Group PLC
+11165,"Orion Software, Inc."
+11247,"Mindscape, Inc."
+11667,Firebird Software
+11677,ZiggySoft
+12049,Pinokl Games
+12274,Purple Software
+12291,Saturn Plus
+12378,Studio Beast
+12419,Assemble Entertainment
+12657,Soft Design Ltd.
+13076,Squashy Software
+13294,FoxNext Games
+13399,MoFunZone
+13460,General Instrument Microelectronic
+13634,Sony Computer Entertainment
+14284,Patrick Hofmann
+15190,Ultimate Games S.A.
+15251,illuCalab
+15435,NHN Corporation
+15494,Movie Games S.A.
+15843,Y'sk
+16374,Troglobytes Games
+16565,Bethesda Softworks
+17205,Eipix Entertainment
+17240,Canvas games
+17579,Epic Fire
+17615,retro-bit
+17976,Age of Fear
+17983,HH-Games
+18271,A Game From Low Polystan
+18352,Aniplex Inc.
+19036,ERS G Studios
+19135,RealArcade
+20810,Art Games Studio S.A.
+20820,JERA
+20873,Pawapuro Production
+21313,Dear Villagers
+21336,Narrative Nine Ltd
+22439,Gregory Pratt
+22493,HiRabbit
+22725,Games for All
+22790,Asoberu! BD-GAME
+22826,B-AI
+22908,Acerola
+23310,iMel Inc.
+23786,"Rogue Games, Incorporated"
+24012,Nicolai Danielsen
+24286,LinkandZelda
+24454,Lazurite Games
+25868,Gamefederation
+25875,Caroline Software Incorporated
+25883,Cow
+26263,SMW Central
+26945,J Griffin
+27414,Star Consult
+27499,High Score Entertainment
+27533,Diamond Head
+27594,[DRAMATIC MUSIC PLAYS]
+27869,Mike Singleton
+27891,Matthew Martinez
+27937,Sega CS3
+28158,DigitalEZ
+29221,Heatherglade Publishing
+30262,Torii Games
