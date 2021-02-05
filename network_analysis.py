@@ -5,7 +5,7 @@ import pandas as pd
 import numpy as np
 import networkx
 from networkx.algorithms import community
-import matplotlib.pyplot as plt
+#import matplotlib.pyplot as plt
 from bokeh.io import show, save
 from bokeh.models import Range1d, TapTool, BoxSelectTool, Circle, MultiLine, EdgesAndLinkedNodes, NodesAndLinkedEdges
 from bokeh.plotting import figure
