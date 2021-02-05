@@ -15,7 +15,7 @@ import streamlit as st
 
 global_max_year = 2021
 
-st.set_page_config(page_title='pana$onic 2001 game hub', page_icon='img/page_icon.jpg', layout='wide')
+st.set_page_config(page_title='pana$onic 2001 game network', page_icon='img/page_icon.jpg', layout='wide')
 
 ### DATA
 @st.cache(show_spinner=False)
