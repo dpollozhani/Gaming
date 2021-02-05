@@ -1,8 +1,9 @@
 #Local
-data/
+temp/
 test.py
 temp.py
 session_state.py
+network_data.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
