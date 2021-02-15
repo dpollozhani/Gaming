@@ -100,7 +100,7 @@ def game_info(input, name_or_id='name', approximate_match=True):
     else:
         return data
 
-def lucky_game_info(**where_filters):
+def lucky_game_info(limit=1, **where_filters):
     query_appendix = []
     for name,value in where_filters.items():
         equality = '='
@@ -120,7 +120,7 @@ def lucky_game_info(**where_filters):
     try:
         game_count = multiquery('games/count', 'Game count', f'fields name; where {query_appendix};')[0]['count']
         offset = random.randint(0, game_count-1)
-        query = f'fields {game_fields}; offset {offset}; limit 1; where {query_appendix};' 
+        query = f'fields {game_fields}; offset {offset}; limit {limit}; where {query_appendix};' 
         data = get_data('games', query)
         if len(data) == 0:
             raise Exception
@@ -342,10 +342,13 @@ def multiquery(endpoint:str, result_name:str, query:str):
     return data
 
 if __name__ == '__main__':
-    #data = involved_companies(game_id='358')
-    #print(data)
-    data = company_games(company='421')
-    pprint(data)
+    data = game_info('Ori and the will of the wisps', approximate_match=False)
+    pprint(data[0])
+    print('=======')
+    companies = involved_companies(game_id='37001')
+    pprint(companies)
+    #data = company_games(company='421')
+    
     
 
 
