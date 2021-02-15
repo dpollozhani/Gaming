@@ -114,7 +114,7 @@ genre_map = _genres()
 game_mode_map = _game_modes()
 platform_map = _platforms()
 
-#FRON PAGE
+#FRONT PAGE
 
 #Filtered search
 st.markdown('#### Find a game based on filters')
