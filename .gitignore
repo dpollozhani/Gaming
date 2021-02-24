@@ -4,6 +4,7 @@ test.py
 temp.py
 session_state.py
 network_data.py
+igdb_calls.py
 
 # Byte-compiled / optimized / DLL files
 __pycache__/
