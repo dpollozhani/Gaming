@@ -1,33 +1,87 @@
 import streamlit as st
+#IGDB modules
+from igdb.wrapper import IGDBWrapper
+from igdb_authentication import get_token
+from igdb_api import IGBDAPI
+from igdb_utilities import prompt_multiple_results, clean_game_info, clean_company_info
+#Gamespot modules
+from gamespot_api import GamespotAPI
+#from gamespot_utilities import clean_game_review
 import pandas as pd
-from igdb_calls import game_info, lucky_game_info, clean_game_info
-from igdb_calls import involved_companies, company_games, multiplayer_modes, prompt_multiple_results, get_image_url
-from igdb_calls import get_game_modes, get_genres, get_platforms
 import os
 from time import mktime
 from datetime import datetime
 
+# from igdb_calls import game_info, lucky_game_info, clean_game_info
+# from igdb_calls import involved_companies, company_games, multiplayer_modes, prompt_multiple_results, get_image_url
+# from igdb_calls import get_game_modes, get_genres, get_platforms
+
 app_mode_environment = os.environ.get('GAME_APP_MODE')
 app_mode = 'test' if not app_mode_environment else app_mode_environment
 
+#################
+### FUNCTIONS ###
+#################
 @st.cache(show_spinner=False)
-def _genres():
-    return get_genres()
+def _igdb():
+    wrapper = IGDBWrapper(os.environ.get('TWITCH_ID'), get_token())
+    return IGBDAPI(wrapper)
 
 @st.cache(show_spinner=False)
-def _game_modes():
-    return get_game_modes()
-
-@st.cache(show_spinner=False)
-def _platforms():
-    return get_platforms()
+def _gamespot():
+    return GamespotAPI(os.environ.get('GAMESPOT_API_KEY'), user_agent='pana$onic game hub')
 
 @st.cache
 def search(input, name_or_id='name', approximate=True):
-
-    raw_info = game_info(input=input, name_or_id=name_or_id, approximate_match=approximate)
-    
+    igdb = _igdb()
+    raw_info = igdb.get_game_info(input=input, name_or_id=name_or_id, approximate_match=approximate)
     return raw_info
+
+@st.cache
+def lucky_search(limit=1, **where_filters):
+    igdb = _igdb()
+    raw_info = igdb.get_lucky_game_info(limit, **where_filters)
+    return raw_info
+
+@st.cache(show_spinner=False)
+def _genres():
+    igdb = _igdb()
+    return igdb.get_all_genres()
+
+@st.cache(show_spinner=False)
+def _game_modes():
+    igdb = _igdb()
+    return igdb.get_all_game_modes()
+
+@st.cache(show_spinner=False)
+def _platforms():
+    igdb = _igdb()
+    return igdb.get_all_platforms()
+
+@st.cache(show_spinner=False)
+def _involved_companies(game_id):
+    igdb = _igdb()
+    return igdb.get_involved_companies(game_id)
+
+@st.cache(show_spinner=False)
+def _company_games(company):
+    igdb = _igdb()
+    return igdb.get_company_games(company)
+
+@st.cache(show_spinner=False)
+def _multiplayer_modes(game_id):
+    igdb = _igdb()
+    return igdb.get_multiplayer_modes(game_id)
+
+@st.cache(show_spinner=False)
+def _get_image_url(id, endpoint='games', img_type='cover'):
+    igdb = _igdb()
+    return igdb.get_image_url(id, endpoint, img_type)
+
+@st.cache(show_spinner=False)
+def _game_review(game):
+    gamespot = _gamespot()
+    return gamespot.game_review(game=new_search)
 
 @st.cache(show_spinner=False)
 def _clean_game_info(info):
@@ -36,22 +90,6 @@ def _clean_game_info(info):
 @st.cache(show_spinner=False)
 def _prompt_multiple_results(info):
     return prompt_multiple_results(info)
-
-@st.cache(show_spinner=False)
-def _involved_companies(game_id):
-    return involved_companies(game_id)
-
-@st.cache(show_spinner=False)
-def _company_games(company):
-    return company_games(company)
-
-@st.cache(show_spinner=False)
-def _multiplayer_modes(game_id):
-    return multiplayer_modes(game_id)
-
-@st.cache(show_spinner=False)
-def _get_image_url(id, endpoint='games', img_type='cover'):
-    return get_image_url(id, endpoint, img_type)
 
 @st.cache(show_spinner=False)
 def ingress(info):
@@ -64,25 +102,6 @@ def ingress(info):
         summary = info['description']
     return title, summary
 
-def drop(df, to_drop):
-    for d in to_drop:
-        df = df[df['Details'] != d]
-    return df
-
-def keep(df, to_keep):
-    fields_to_keep = sorted(list(set(to_keep).intersection(set(df['Details'].values))))
-    return df[df['Details'].isin(fields_to_keep)]
-
-@st.cache(show_spinner=False)
-def render(info, filters=None):
-    df = pd.DataFrame.from_dict(info, orient='index')
-    df.reset_index(inplace=True)
-    df.rename(columns={'index': 'Details', 0: ''}, inplace=True)
-    df = drop(df, ['id', 'summary', 'name', 'description'])
-    if filters:
-        df = drop(df, filters)
-    return df.set_index('Details').transpose()
-
 @st.cache(show_spinner=False)
 def score_color(score):
     if score > 69:
@@ -92,6 +111,10 @@ def score_color(score):
     else: 
         color = '#d6200f'
     return color
+
+########################
+### STREAMLIT SCRIPT ###
+########################
 
 #Page config
 st.set_page_config(page_title='pana$onic 2001 game hub', page_icon='img/page_icon.jpg', layout='wide')
@@ -113,8 +136,6 @@ feeling_lucky = False
 genre_map = _genres()
 game_mode_map = _game_modes()
 platform_map = _platforms()
-
-#FRONT PAGE
 
 #Filtered search
 st.markdown('#### Find a game based on filters')
@@ -175,7 +196,7 @@ multiple_results, raw_data = '', False
 try:
     st.markdown(' ')
     if feeling_lucky: #Lucky search
-        raw_data, game_count = lucky_game_info(**where_filters)
+        raw_data, game_count = lucky_search(**where_filters)
         st.markdown('#### Results')
         st.markdown(' ')
         st.text(f'Found {game_count} games with these constraints. Showing one of these.')
@@ -281,6 +302,24 @@ try:
                 remove_from_details.append('release_dates')
             else:
                 st.markdown('No data available.')
+        
+        #Reviews
+        review_data = _game_review(new_search)
+        if len(review_data['results']) > 0:
+            review_block = st.beta_container()
+            with review_block:
+                st.subheader('Review')
+                review_summary = review_data['results'][0]['deck']
+                review_author = review_data['results'][0]['authors']
+                review_date = review_data['results'][0]['update_date'].split(' ')[0]
+                st.markdown(f'"*{review_summary}*"')
+                st.markdown(f'-**{review_author}** (Gamespot, {review_date})')
+                review_expander = st.beta_expander('Full review')
+                with review_expander:
+                    review_body = review_data['results'][0]['body']
+                    st.markdown(review_body, unsafe_allow_html=True)
+                
+        st.subheader('More info')
 
         #Expand for multiplayer modes
         multi_modes = _multiplayer_modes(data['id'])
@@ -335,4 +374,3 @@ try:
 except Exception as e:
     #st.error('Something went wrong. Content not available.')
     print(e)
-        
