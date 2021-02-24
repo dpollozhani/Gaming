@@ -12,9 +12,6 @@ import os
 from time import mktime
 from datetime import datetime
 
-# from igdb_calls import game_info, lucky_game_info, clean_game_info
-# from igdb_calls import involved_companies, company_games, multiplayer_modes, prompt_multiple_results, get_image_url
-# from igdb_calls import get_game_modes, get_genres, get_platforms
 
 app_mode_environment = os.environ.get('GAME_APP_MODE')
 app_mode = 'test' if not app_mode_environment else app_mode_environment
@@ -81,7 +78,7 @@ def _get_image_url(id, endpoint='games', img_type='cover'):
 @st.cache(show_spinner=False)
 def _game_review(game):
     gamespot = _gamespot()
-    return gamespot.game_review(game=new_search)
+    return gamespot.game_review(game)
 
 @st.cache(show_spinner=False)
 def _clean_game_info(info):
@@ -206,12 +203,14 @@ try:
         multiple_results = 1
         raw_data = search(input=search_text, approximate=approximate)
         multiple_results = _prompt_multiple_results(raw_data)
+        review_input = search_text
         
         #Too many results matching query -> prompt to select
         if len(multiple_results) > 1:
             new_search = st.selectbox('Multiple matches were found (first is shown). You may narrow down your search:', list(multiple_results.keys()))
             st.markdown('-------')
             raw_data = search(input=multiple_results[new_search], name_or_id='id')
+            review_input = new_search
 
     if raw_data:
         #Get clean data
@@ -304,7 +303,7 @@ try:
                 st.markdown('No data available.')
         
         #Reviews
-        review_data = _game_review(new_search)
+        review_data = _game_review(review_input)
         if len(review_data['results']) > 0:
             review_block = st.beta_container()
             with review_block:
