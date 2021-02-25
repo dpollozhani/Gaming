@@ -6,9 +6,11 @@ from igdb_api import IGBDAPI
 from igdb_utilities import prompt_multiple_results, clean_game_info, clean_company_info
 #Gamespot modules
 from gamespot_api import GamespotAPI
-#from gamespot_utilities import clean_game_review
+from gamespot_utilities import clean_game_review
 import pandas as pd
 import os
+import sys
+import inspect
 from time import mktime
 from datetime import datetime
 
@@ -83,6 +85,10 @@ def _game_review(game):
 @st.cache(show_spinner=False)
 def _clean_game_info(info):
     return clean_game_info(info)
+
+@st.cache(show_spinner=False)
+def _clean_game_review(review):
+    return clean_game_review(review)
 
 @st.cache(show_spinner=False)
 def _prompt_multiple_results(info):
@@ -279,8 +285,6 @@ try:
             st.markdown('### Game modes')
             if 'game_modes' in data.keys():
                 st.markdown(data['game_modes'])
-                #for game_m in data['game_modes'].split(';'):
-                #    st.markdown(f'{game_m}')
                 remove_from_details.append('game_modes')
             else:
                 st.markdown('No data available.')
@@ -288,8 +292,6 @@ try:
             st.subheader('Age recommendation')
             if 'age_ratings' in data.keys():
                 st.markdown(data['age_ratings'])
-                #for age_r in data['age_ratings'].split(';'):
-                #    st.markdown(f'{age_r}')
                 remove_from_details.append('age_ratings')
             else:
                 st.markdown('No data available.')
@@ -310,12 +312,16 @@ try:
                 st.subheader('Review')
                 review_summary = review_data['results'][0]['deck']
                 review_author = review_data['results'][0]['authors']
+                review_positives = review_data['results'][0]['good']
+                review_negatives = review_data['results'][0]['bad']
                 review_date = review_data['results'][0]['update_date'].split(' ')[0]
                 st.markdown(f'"*{review_summary}*"')
+                st.markdown(f':thumbsup: {review_positives.replace("|",  " | ")}')
+                st.markdown(f':thumbsdown: {review_negatives.replace("|",  " | ")}')
                 st.markdown(f'-**{review_author}** (Gamespot, {review_date})')
                 review_expander = st.beta_expander('Full review')
                 with review_expander:
-                    review_body = review_data['results'][0]['body']
+                    review_body = _clean_game_review(review_data['results'][0]['body'])
                     st.markdown(review_body, unsafe_allow_html=True)
                 
         st.subheader('More info')
@@ -371,5 +377,6 @@ try:
                 if key not in remove_from_details:
                     st.markdown('* ' + '**' + str(key) + '**: ' + str(value), unsafe_allow_html=True)
 except Exception as e:
-    #st.error('Something went wrong. Content not available.')
     print(e)
+    print('Module/Function : ' + os.path.basename(__file__) + ' ' + sys._getframe().f_code.co_name +'()') 
+    print('Called from     : ' + os.path.basename(inspect.stack()[1][1]) +' ' + inspect.stack()[1][3] + '()')
