@@ -3,7 +3,7 @@ import re
 def clean_game_review(review:str):
     video_pattern = r'(<div data-embed-type="video".*?</div>)'
     review = re.sub(video_pattern, '', review)
-    review = review.replace('<a ', '<a target="_blank"')
+    review = review.replace('<a ', '<a target="_blank" ')
     return review
 
 
