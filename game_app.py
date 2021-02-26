@@ -1,7 +1,7 @@
 import streamlit as st
 #IGDB modules
 from igdb.wrapper import IGDBWrapper
-from igdb_authentication import get_token
+from igdb_authentication import authenticate_twitch, get_token
 from igdb_api import IGBDAPI
 from igdb_utilities import prompt_multiple_results, clean_game_info, clean_company_info
 #Gamespot modules
@@ -14,6 +14,8 @@ import inspect
 from time import mktime
 from datetime import datetime
 
+if datetime.today().day == 1: #authenticating twitch (IGDB API) once every month
+    authenticate_twitch()
 
 app_mode_environment = os.environ.get('GAME_APP_MODE')
 app_mode = 'test' if not app_mode_environment else app_mode_environment
