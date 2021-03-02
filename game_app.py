@@ -11,11 +11,20 @@ import pandas as pd
 import os
 import sys
 import inspect
+import json
 from time import mktime
 from datetime import datetime
 
-if datetime.today().day == 1: #authenticating twitch (IGDB API) once every month
+with open('credentials/twitch_credentials.json', 'r') as f:
+    twitch_expiry_days = json.load(f)['expires_in']/(3600*24)
+    f.close()
+
+credentials_updated = os.path.getmtime('credentials/twitch_credentials.json')
+
+if (datetime.now().timestamp() - credentials_updated)/(3600*24) > twitch_expiry_days-1: #re-authenticating twich if close to expiry/has expired
     authenticate_twitch()
+    st.error('Wait for developer to update IGDB credentials.')
+    st.stop()
 
 app_mode_environment = os.environ.get('GAME_APP_MODE')
 app_mode = 'test' if not app_mode_environment else app_mode_environment
@@ -23,12 +32,12 @@ app_mode = 'test' if not app_mode_environment else app_mode_environment
 #################
 ### FUNCTIONS ###
 #################
-@st.cache(show_spinner=False)
+#@st.cache(show_spinner=False)
 def _igdb():
     wrapper = IGDBWrapper(os.environ.get('TWITCH_ID'), get_token())
     return IGBDAPI(wrapper)
 
-@st.cache(show_spinner=False)
+#@st.cache(show_spinner=False)
 def _gamespot():
     return GamespotAPI(os.environ.get('GAMESPOT_API_KEY'), user_agent='pana$onic game hub')
 
