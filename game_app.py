@@ -23,8 +23,8 @@ credentials_updated = os.path.getmtime('credentials/twitch_credentials.json')
 
 if (datetime.now().timestamp() - credentials_updated)/(3600*24) > twitch_expiry_days-1: #re-authenticating twich if close to expiry/has expired
     authenticate_twitch()
-    st.error('Wait for developer to update IGDB credentials.')
     st.stop()
+    st.error('Wait for developer to update IGDB credentials.')
 
 app_mode_environment = os.environ.get('GAME_APP_MODE')
 app_mode = 'test' if not app_mode_environment else app_mode_environment
