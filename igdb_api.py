@@ -108,8 +108,9 @@ class IGBDAPI():
         fields = igdb_utilities.multiplayer_fields
         field_map = igdb_utilities.multiplayer_field_map
 
-        query = f'fields {fields}; where game = {game_id} & platform != null;'
+        query = f'fields {fields}; where game = {game_id};'
         raw_data = self.query_endpoint('multiplayer_modes', query)
+
         multiplayer_modes = {}
         for raw in raw_data:
             temp_dict = {}
@@ -146,6 +147,21 @@ class IGBDAPI():
         data = self.query_endpoint(endpoint, query)
         url = 'https:' + data[0][img_type]['url']
         
+        return url
+
+    def get_game_video(self, id):
+        query = f'fields *; where game = {id};'
+        raw_data = self.query_endpoint('game_videos', query)
+        
+        url = ''
+        for raw in raw_data:
+            video_type = raw['name']
+            video_id = raw['video_id']
+            if 'gameplay' in video_type.lower() or 'trailer' in video_type.lower():
+                url += f'https://www.youtube.com/watch?v={video_id}'
+                if not requests.get(url).status_code == 200:
+                    url = ''
+                break
         return url
 
     def get_company_games(self, company_id):
