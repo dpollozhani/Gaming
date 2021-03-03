@@ -64,7 +64,10 @@ class GamespotAPI:
 
     def game_review(self, game:str):
         review_data = self.query_endpoint(endpoint='reviews', format=self._default_format, filter=f'title:{game}')
-        return review_data
+        if len(review_data) > 0:
+            if game in review_data['results'][0]['title'][:4]: 
+                return review_data
+        return {'results': ''}
 
     def game_articles(self, game:str, limit='5'):
         article_data = self.query_endpoint(endpoint='articles', format=self._default_format, filter=f'title:{game}', sort='publish_date:desc', limit=limit)
