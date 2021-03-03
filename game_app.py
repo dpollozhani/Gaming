@@ -33,12 +33,12 @@ app_mode = 'test' if not app_mode_environment else app_mode_environment
 ### FUNCTIONS ###
 #################
 
-@st.cache(allow_output_mutation=True)
+#@st.cache(allow_output_mutation=True)
 def _igdb():
     wrapper = IGDBWrapper(os.environ.get('TWITCH_ID'), get_token())
     return IGBDAPI(wrapper)
 
-@st.cache(show_spinner=False)
+#@st.cache(show_spinner=False)
 def _gamespot():
     return GamespotAPI(os.environ.get('GAMESPOT_API_KEY'), user_agent='pana$onic game hub')
 
@@ -87,6 +87,11 @@ def _multiplayer_modes(game_id):
 def _get_image_url(id, endpoint='games', img_type='cover'):
     igdb = _igdb()
     return igdb.get_image_url(id, endpoint, img_type)
+
+@st.cache(show_spinner=False)
+def _get_game_video(id):
+    igdb = _igdb()
+    return igdb.get_game_video(id)
 
 @st.cache(show_spinner=False)
 def _game_review(game):
@@ -233,6 +238,7 @@ try:
         
         title, summary = ingress(data)
         image_path = _get_image_url(data['id'], endpoint='games', img_type='cover')
+        game_video = _get_game_video(data['id'])
         
         #Header markdown
         header = f'<div><img style="float:left;margin-right:10px;", src="{image_path}", class="img-fluid"/><h2>{title}</h2>'
@@ -313,9 +319,15 @@ try:
             else:
                 st.markdown('No data available.')
         
+        #Video
+        if len(game_video) > 0:
+            st.video(game_video)
+            #embedded = f'<iframe src="{game_video}"></iframe>'
+            #st.markdown(embedded, unsafe_allow_html=True)
+
         #Reviews
         review_data = _game_review(title)
-        if len(review_data['results']) > 0:
+        if len(review_data['results']) > 0: 
             review_block = st.beta_container()
             with review_block:
                 st.subheader('Review')
@@ -385,6 +397,7 @@ try:
             for key, value in data.items():
                 if key not in remove_from_details:
                     st.markdown('* ' + '**' + str(key) + '**: ' + str(value), unsafe_allow_html=True)
+
 except Exception as e:
     print(e)
     print('Module/Function : ' + os.path.basename(__file__) + ' ' + sys._getframe().f_code.co_name +'()') 
