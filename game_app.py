@@ -32,22 +32,22 @@ app_mode = 'test' if not app_mode_environment else app_mode_environment
 #################
 ### FUNCTIONS ###
 #################
-#@st.cache(show_spinner=False)
+
+@st.cache(allow_output_mutation=True)
 def _igdb():
     wrapper = IGDBWrapper(os.environ.get('TWITCH_ID'), get_token())
     return IGBDAPI(wrapper)
 
-#@st.cache(show_spinner=False)
+@st.cache(show_spinner=False)
 def _gamespot():
     return GamespotAPI(os.environ.get('GAMESPOT_API_KEY'), user_agent='pana$onic game hub')
 
-@st.cache
+@st.cache(allow_output_mutation=True)
 def search(input, name_or_id='name', approximate=True):
     igdb = _igdb()
     raw_info = igdb.get_game_info(input=input, name_or_id=name_or_id, approximate_match=approximate)
     return raw_info
 
-@st.cache
 def lucky_search(limit=1, **where_filters):
     igdb = _igdb()
     raw_info = igdb.get_lucky_game_info(limit, **where_filters)
@@ -220,14 +220,12 @@ try:
         multiple_results = 1
         raw_data = search(input=search_text, approximate=approximate)
         multiple_results = _prompt_multiple_results(raw_data)
-        review_input = search_text
         
         #Too many results matching query -> prompt to select
         if len(multiple_results) > 1:
             new_search = st.selectbox('Multiple matches were found (first is shown). You may narrow down your search:', list(multiple_results.keys()))
             st.markdown('-------')
             raw_data = search(input=multiple_results[new_search], name_or_id='id')
-            review_input = new_search
 
     if raw_data:
         #Get clean data
@@ -316,7 +314,7 @@ try:
                 st.markdown('No data available.')
         
         #Reviews
-        review_data = _game_review(review_input)
+        review_data = _game_review(title)
         if len(review_data['results']) > 0:
             review_block = st.beta_container()
             with review_block:
