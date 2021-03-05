@@ -64,7 +64,7 @@ class GamespotAPI:
 
     def game_review(self, game:str):
         review_data = self.query_endpoint(endpoint='reviews', format=self._default_format, filter=f'title:{game}')
-        if len (review_data) > 0:
+        if len(review_data['results']) > 0:
             #print(fuzz.token_set_ratio(game, review_data['results'][0]['title']))
             if fuzz.token_set_ratio(game, review_data['results'][0]['title']) > 95:
                 return review_data
@@ -92,6 +92,6 @@ if __name__ == '__main__':
     gs = GamespotAPI(gamespot_key, user_agent='dpollozhani')
     #data = gs.game_re('games', format='json', filter='name:Ori and the blind forest')
     #pprint(data)
-    review = gs.game_review(game='Fe')
+    review = gs.game_review(game='88 Heroes')
     pprint(review)
 
