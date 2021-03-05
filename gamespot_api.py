@@ -2,7 +2,7 @@ import os
 import requests
 from ast import literal_eval
 import json
-import xml.etree.ElementTree as ET
+from fuzzywuzzy import fuzz
 from pprint import pprint
 
 class GamespotAPI:
@@ -64,8 +64,9 @@ class GamespotAPI:
 
     def game_review(self, game:str):
         review_data = self.query_endpoint(endpoint='reviews', format=self._default_format, filter=f'title:{game}')
-        if len(review_data) > 0:
-            if game in review_data['results'][0]['title'][:4]: 
+        if len (review_data) > 0:
+            #print(fuzz.token_set_ratio(game, review_data['results'][0]['title']))
+            if fuzz.token_set_ratio(game, review_data['results'][0]['title']) > 95:
                 return review_data
         return {'results': ''}
 
@@ -89,9 +90,8 @@ class GamespotAPI:
 if __name__ == '__main__':
     gamespot_key = os.environ.get('GAMESPOT_API_KEY')
     gs = GamespotAPI(gamespot_key, user_agent='dpollozhani')
-    print(gs)
-    #data = gs.query_endpoint('games', format='xml', filter='name:Ori and the blind forest')
+    #data = gs.game_re('games', format='json', filter='name:Ori and the blind forest')
     #pprint(data)
-    # articles = gs.game_articles(game='Ori and the blind forest')
-    # pprint(articles['results'])
+    review = gs.game_review(game='Fe')
+    pprint(review)
 
