@@ -7,3 +7,4 @@ bokeh==2.2.3
 networkx==2.5
 igdb-api-v4==0.0.3
 watchdog==1.0.2
+fuzzywuzzy==0.18.0
