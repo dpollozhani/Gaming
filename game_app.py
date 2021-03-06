@@ -289,8 +289,6 @@ try:
             st.markdown('### Available on')
             if 'platforms' in data.keys():
                 st.markdown(data['platforms'])
-                #for p in data['platforms'].split(';'):
-                #    st.markdown(f'{p}')
                 remove_from_details.append('platforms')
             else:
                 st.markdown('No data available.')
@@ -322,8 +320,6 @@ try:
         #Video
         if len(game_video) > 0:
             st.video(game_video)
-            #embedded = f'<iframe src="{game_video}"></iframe>'
-            #st.markdown(embedded, unsafe_allow_html=True)
 
         #Reviews
         review_data = _game_review(title)
@@ -349,6 +345,7 @@ try:
 
         #Expand for multiplayer modes
         multi_modes = _multiplayer_modes(data['id'])
+        print(multi_modes)
         if multi_modes:
             with st.beta_expander('Multiplayer modes'):
                 for m, vals in multi_modes.items():
