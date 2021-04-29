@@ -143,8 +143,8 @@ st.image('img/wallpaperflare.com_wallpaper.jpg', use_column_width=True)
 
 #Title
 title = '''
-    <div style ="background-color:white;padding:10px">
-    <h1 style ="color:black;text-align:center;">pana$onic 2001 Game Hub</h1>
+    <div> 
+    <h1 style ="text-align:center;">pana$onic 2001 Game Hub</h1>
     <p style ="background-color:#b991cf;color:orange;font-style:oblique;text-align:center;">For games, look no further</p>
     </div> 
 '''
@@ -157,21 +157,23 @@ game_mode_map = _game_modes()
 platform_map = _platforms()
 
 #Filtered search
-st.markdown('#### Find a game based on filters')
-col01, col02, col03 = st.beta_columns((2,2,2))
-with col01:
-    genre_filters = st.multiselect('Genres', list(genre_map.keys()))
-    rating_filter = st.slider('Minimum rating', min_value=10, max_value=100, value=70, step=10)
-with col02:    
-    game_mode_filters = st.multiselect('Game mode', list(game_mode_map.keys()))
-    st.markdown('<font size="2">Online</font>', unsafe_allow_html=True)
-    online_mode = st.checkbox('')
-with col03:
-    platform_filters = st.multiselect('Platform', list(platform_map.keys()))
-    year_filter = st.select_slider('Earliest release year', list(range(1985, datetime.today().year+1)), value=2010)
+with st.form(key='lucky_form'):
+    st.markdown('#### Find a game based on filters')
+    col01, col02, col03 = st.beta_columns((2,2,2))
+    with col01:
+        genre_filters = st.multiselect('Genres', list(genre_map.keys()))
+        rating_filter = st.slider('Minimum rating', min_value=10, max_value=100, value=70, step=10)
+    with col02:    
+        game_mode_filters = st.multiselect('Game mode', list(game_mode_map.keys()))
+        st.markdown('<font size="2">Online</font>', unsafe_allow_html=True)
+        online_mode = st.checkbox('')
+    with col03:
+        platform_filters = st.multiselect('Platform', list(platform_map.keys()))
+        year_filter = st.select_slider('Earliest release year (on chosen platform)', list(range(1985, datetime.today().year+1)), value=2010)
 
-feeling_lucky = st.button('Lucky search')
-st.markdown('-------')
+    feeling_lucky = st.form_submit_button('Lucky search')
+
+#st.markdown('-------')
 where_filters, genres, game_modes = {}, '', ''
 
 if genre_filters:
@@ -214,14 +216,12 @@ multiple_results, raw_data = '', False
 
 try:
     st.markdown(' ')
+    st.markdown('#### Results')
+    st.markdown(' ')
     if feeling_lucky: #Lucky search
         raw_data, game_count = lucky_search(**where_filters)
-        st.markdown('#### Results')
-        st.markdown(' ')
         st.text(f'Found {game_count} games with these constraints. Showing one of these.')
     elif len(search_text) > 0: #String search
-        st.markdown('#### Results')
-        st.markdown(' ')
         multiple_results = 1
         raw_data = search(input=search_text, approximate=approximate)
         multiple_results = _prompt_multiple_results(raw_data)
